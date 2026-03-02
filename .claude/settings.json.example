@@ -1,0 +1,27 @@
+{
+  "hooks": {
+    "PermissionRequest": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afplay -v 0.5 /System/Library/Sounds/Funk.aiff",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afplay -v 0.5 /System/Library/Sounds/Blow.aiff",
+            "async": true
+          }
+        ]
+      }
+    ]
+  }
+
+}
