@@ -7,10 +7,10 @@ A practical guide for the Recipe Streamliner team on how to use Perplexity Enter
 - [What Is Perplexity Enterprise?](#what-is-perplexity-enterprise)
 - [How It Differs From Claude Code / Goose](#how-it-differs-from-claude-code--goose)
 - [Use Cases For This Project](#use-cases-for-this-project)
-  - [🧠 Research & Domain Knowledge](#-research--domain-knowledge)
-  - [📦 Up-to-Date Library Docs & Debugging](#-up-to-date-library-docs--debugging)
-  - [🏆 Competitive & Accessibility Research](#-competitive--accessibility-research)
-  - [✍️ Content & Copy](#️-content--copy)
+  - [🧠 Research & Domain Knowledge](#research--domain-knowledge)
+  - [📦 Up-to-Date Library Docs & Debugging](#up-to-date-library-docs--debugging)
+  - [🏆 Competitive & Accessibility Research](#competitive--accessibility-research)
+  - [✍️ Content & Copy](#content--copy)
 - [Suggested Team Workflow](#suggested-team-workflow)
 - [Example Queries](#example-queries)
 - [Tips & Gotchas](#tips--gotchas)
@@ -45,9 +45,9 @@ Perplexity Enterprise is an AI-powered search and research tool that answers que
 
 ## Use Cases For This Project
 
-### 🧠 Research & Domain Knowledge
+### Research & Domain Knowledge
 
-This is Perplexity's strongest value for Recipe Streamliner. Use it to inform design and product decisions.
+🧠 This is Perplexity's strongest value for Recipe Streamliner. Use it to inform design and product decisions.
 
 **♿ Accessibility & user research**
 - What physical and cognitive limitations most affect people's ability to cook?
@@ -66,9 +66,9 @@ This is Perplexity's strongest value for Recipe Streamliner. Use it to inform de
 
 ---
 
-### 📦 Up-to-Date Library Docs & Debugging
+### Up-to-Date Library Docs & Debugging
 
-Claude Code's knowledge cuts off at August 2025. For anything released or changed after that, Perplexity is more reliable.
+📦 Claude Code's knowledge cuts off at August 2025. For anything released or changed after that, Perplexity is more reliable.
 
 **Good queries:**
 - "vite-plugin-pwa 1.x workbox configuration for IndexedDB offline caching"
@@ -80,9 +80,9 @@ After getting an answer, paste the relevant snippet into your conversation with 
 
 ---
 
-### 🏆 Competitive & Accessibility Research
+### Competitive & Accessibility Research
 
-Useful for the pitch and for validating your feature set.
+🏆 Useful for the pitch and for validating your feature set.
 
 - "Accessible recipe apps for people with disabilities — what exists?"
 - "Cognitive load considerations for cooking apps"
@@ -91,9 +91,9 @@ Useful for the pitch and for validating your feature set.
 
 ---
 
-### ✍️ Content & Copy
+### Content & Copy
 
-Perplexity can help you write user-facing language that's grounded in real accessibility guidance.
+✍️ Perplexity can help you write user-facing language that's grounded in real accessibility guidance.
 
 - "How should apps communicate allergen warnings to users with cognitive disabilities?"
 - "Plain language guidelines for step-by-step instructions"
@@ -101,7 +101,7 @@ Perplexity can help you write user-facing language that's grounded in real acces
 
 ---
 
-## 🔄 Suggested Team Workflow
+## Suggested Team Workflow
 
 ```
 1. 🤔 Identify a question or gap
@@ -121,7 +121,7 @@ Perplexity can help you write user-facing language that's grounded in real acces
 
 ---
 
-## 📋 Example Queries
+## Example Queries
 
 Copy-paste these directly into Perplexity:
 
@@ -145,7 +145,7 @@ What recipe websites have the most accessible, plain-language content?
 
 ---
 
-## ⚠️ Tips & Gotchas
+## Tips & Gotchas
 
 - ✅ **Always check the sources.** Perplexity synthesizes well but occasionally misreads or outdated pages slip in. Click through on anything you plan to implement.
 - 🚫 **It's not a code editor.** Code snippets from Perplexity often need adaptation. Bring them to Claude Code for integration.
