@@ -9,7 +9,7 @@ import { convertWeightToVolume } from './tools/convertWeightToVolume'
 import { validateOutput, parseRecipeJSON } from './tools/validateOutput'
 import type { RecipeJSON } from '@/types/recipe'
 
-const MAX_ITERATIONS = 10
+const MAX_ITERATIONS = 30
 
 const SYSTEM_PROMPT = `You are a recipe extraction assistant. Your job is to parse recipe text into a structured JSON format using the tools provided.
 
@@ -19,15 +19,15 @@ Follow this sequence:
 3. Call extract_steps with the cooking instructions section.
 4. For each ingredient that has a volume measurement, call convert_volume_to_weight to add gram equivalents.
 5. For each ingredient that has a weight measurement, call convert_weight_to_volume to add volume equivalents for users without a scale.
-6. Call validate_output with the assembled recipe object.
-7. Output the final RecipeJSON as a JSON code block.
+6. Output the final RecipeJSON as a JSON code block. Do not call any more tools after step 5 is done.
 
 Rules you must follow:
 - NEVER fabricate ingredient substitutions. Only include substitutions explicitly stated in the source text.
 - Flag uncertainty on conversions rather than guessing. Use the conversion tools as provided.
 - Preserve the author's preamble intent — do not paraphrase tips.
 - If a step requires overnight marinating, extended resting, or any timing that cannot be shortened, mark it as critical.
-- Output the final result as a single JSON code block containing the complete RecipeJSON object.`
+- Output the final result as a single JSON code block containing the complete RecipeJSON object.
+- Do NOT include "id" or "extractedAt" fields in your output — they will be injected automatically.`
 
 function buildInitialMessages(
   recipeText: string,
@@ -88,7 +88,7 @@ export async function runRecipeAgent(options: RunAgentOptions): Promise<RecipeJS
 
   const client = new OpenAI({ apiKey, dangerouslyAllowBrowser: true })
   const messages = buildInitialMessages(recipeText, sourceUrl)
-  const openAITools = toOpenAITools(toolDefinitions)
+  const openAITools = toOpenAITools(toolDefinitions.filter((t) => t.name !== 'validate_output'))
 
   let iterations = 0
 

@@ -11,7 +11,8 @@ export interface FetchedRecipe {
  * then extracts the article body with @mozilla/readability.
  */
 export async function fetchRecipeFromUrl(url: string): Promise<FetchedRecipe> {
-  const proxyUrl = `/api/fetch-recipe?url=${encodeURIComponent(url)}`
+  const apiBase = import.meta.env.VITE_API_BASE ?? ''
+  const proxyUrl = `${apiBase}/api/fetch-recipe?url=${encodeURIComponent(url)}`
   const response = await fetch(proxyUrl)
 
   if (!response.ok) {

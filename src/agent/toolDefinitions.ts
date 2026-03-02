@@ -25,10 +25,15 @@ export const toolDefinitions: ToolDefinition[] = [
               original: { type: 'string', description: 'The original ingredient.' },
               substitute: { type: 'string', description: 'The suggested substitute.' },
               note: { type: 'string', description: 'Optional note about the substitution.' },
+              sourceNote: {
+                type: 'string',
+                enum: ['preamble', 'inline'],
+                description: 'Where this substitution appeared in the source text.',
+              },
             },
-            required: ['original', 'substitute'],
+            required: ['original', 'substitute', 'sourceNote'],
           },
-          description: 'Ingredient substitutions explicitly stated in the source text only.',
+          description: 'Ingredient substitutions explicitly stated in the source text only. Each substitution must include a "sourceNote" field.',
         },
         techniqueNotes: {
           type: 'array',

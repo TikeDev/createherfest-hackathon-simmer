@@ -4,12 +4,14 @@ import { VitePWA } from 'vite-plugin-pwa'
 import path from 'path'
 import type { Plugin } from 'vite'
 
-// Local dev middleware that mirrors api/fetch-recipe.ts for testing URL import without Vercel
+// Local dev middleware that mirrors api/fetch-recipe.ts for testing URL import without Vercel.
+// Only used when VITE_API_BASE is not set in .env.
 const devFetchProxy: Plugin = {
   name: 'dev-fetch-proxy',
   configureServer(server) {
-    server.middlewares.use('/api/fetch-recipe', async (req, res) => {
-      const rawUrl = new URL(req.url ?? '', 'http://localhost').searchParams.get('url')
+    server.middlewares.use(async (req, res, next) => {
+      if (!req.url?.startsWith('/api/fetch-recipe')) return next()
+      const rawUrl = new URL(req.url, 'http://localhost').searchParams.get('url')
       if (!rawUrl) {
         res.writeHead(400, { 'Content-Type': 'application/json' })
         res.end(JSON.stringify({ error: 'Missing url param' }))
@@ -18,12 +20,19 @@ const devFetchProxy: Plugin = {
       try {
         const upstream = await fetch(rawUrl, {
           headers: {
-            'User-Agent': 'Mozilla/5.0 (compatible; RecipeStreamliner-dev/1.0)',
-            Accept: 'text/html,application/xhtml+xml',
+            'User-Agent':
+              'Mozilla/5.0 (compatible; RecipeStreamliner/1.0; +https://recipe-streamliner.vercel.app)',
+            Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.9',
           },
         })
+        if (!upstream.ok) {
+          res.writeHead(502, { 'Content-Type': 'application/json' })
+          res.end(JSON.stringify({ error: `Failed to fetch URL: ${upstream.status} ${upstream.statusText}` }))
+          return
+        }
         const html = await upstream.text()
-        res.writeHead(upstream.status, { 'Content-Type': 'text/html; charset=utf-8' })
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' })
         res.end(html)
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Unknown error'
