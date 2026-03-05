@@ -33,7 +33,7 @@
 - **Session-aware recommendations:** Users can describe their current state via chips (low energy, pain flare, brain fog) and/or free text to get context-sensitive results — without losing their baseline profile.
 - **Hard safety filtering:** Allergens, excluded ingredients, and restricted techniques are *never* surfaced, including in ingredient alternatives.
 - **Soft scoring & explainability:** Remaining recipes are ranked by time fit, energy fit, appliance fit, sensory match, and cleanup burden. Every recommendation shows "Why this fits you."
-- **AI extraction agent:** Imports any recipe URL or pasted text into a structured, offline-capable format using GPT-4o-mini with function calling.
+- **AI extraction agent:** Imports any recipe URL or pasted text into a structured, offline-capable format using gpt-5-nano with function calling.
 - **Playbook View:** Step-checkable cooking mode with large text and minimal distraction — designed for use while cooking with limited attention.
 - **Source-faithful substitutions:** Ingredient alternatives are shown only when the original recipe source provides them, and only after passing all safety constraints.
 
@@ -69,11 +69,11 @@ Add your `VITE_OPENAI_API_KEY` to `.env`, then open **http://localhost:5173** in
 - **Frontend:** React 19 + TypeScript — PWA (via `vite-plugin-pwa`), Vite 6, Tailwind CSS 3. Handles profile setup, session input, recommendations, recipe detail, and Playbook View.
 - **Backend:** Vercel serverless function (`api/fetch-recipe.ts`) — CORS proxy for recipe URL fetching. No persistent server.
 - **Database:** IndexedDB via `idb` — fully local storage for recipes, user profile, and offline extraction queue.
-- **AI Integration:** OpenAI `gpt-4o-mini` (temp 0.3) with function calling — powers the recipe extraction agent (parse ingredients, extract steps, convert units, validate output).
+- **AI Integration:** OpenAI `gpt-5-nano` (temp 0.3) with function calling — powers the recipe extraction agent (parse ingredients, extract steps, convert units, validate output).
 
 ### 🤖 goose Integration (AI/ML Track)
 
-- **Model:** GPT-4o-mini via OpenAI SDK (run directly in-browser through a Vercel-proxied API call).
+- **Model:** gpt-5-nano via OpenAI SDK (run directly in-browser through a Vercel-proxied API call).
 - **Implementation:** A multi-step agent loop in `src/agent/recipeAgent.ts` calls 6 structured tools — `extract_preamble`, `parse_ingredients`, `extract_steps`, `convert_volume_to_weight`, `convert_weight_to_volume`, `validate_output` — to transform unstructured recipe text into typed, validated JSON. The agent runs up to 10 iterations with a tool-call cap.
 - **Impact:** Converts any recipe URL or raw text into an accessible, structured format in ~5–10 seconds — including both volume and weight unit variants for users who cook by feel or by scale.
 

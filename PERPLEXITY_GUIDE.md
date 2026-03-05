@@ -138,7 +138,7 @@ What does current research say about cognitive load in mobile cooking apps?
 
 vite-plugin-pwa offline caching for dynamic IndexedDB content — current best practices
 
-OpenAI gpt-4o-mini function calling — parallel tool use limitations
+OpenAI gpt-5-nano function calling — parallel tool use limitations
 
 What recipe websites have the most accessible, plain-language content?
 ```

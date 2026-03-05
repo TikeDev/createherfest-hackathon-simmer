@@ -65,7 +65,7 @@ POST /api/grocery-list      (stretch) { recipeIds, profileId? }
 
 ### Recipe Extraction Agent
 
-An in-app agent (GPT-4o) processes imported recipes via URL or pasted text into structured JSON. Pipeline:
+An in-app agent (gpt-5-nano) processes imported recipes via URL or pasted text into structured JSON. Pipeline:
 1. Fetch & clean raw content
 2. Extract preamble (tips, substitutions, technique notes)
 3. Parse ingredients with quantities, units, density-based weight conversions
