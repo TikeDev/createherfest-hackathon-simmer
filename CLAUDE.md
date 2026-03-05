@@ -95,6 +95,23 @@ These must never be violated:
 - Restricted techniques/tools are always blocked
 - Unsafe ingredient alternatives (allergen/excluded) are never shown even if present in source
 
+## Chrome DevTools MCP Debugging Flow
+
+When debugging with Claude Code + Chrome DevTools MCP:
+
+1. Start dev server with Chrome: `pnpm dev:browser`
+2. In Claude Code, verify MCP is connected: `/mcp` → should show `chrome-devtools`
+3. Standard debugging sequence:
+   - `list_pages` → find the right page ID
+   - `select_page` → focus that page
+   - `take_snapshot` → read DOM state (prefer over screenshot)
+   - `evaluate_script` → run JS to check element positions, state, etc.
+   - `list_console_messages` with `types: ["error"]` → catch runtime errors
+   - `list_network_requests` → find stuck/failed requests
+
+**Rule:** Never declare a UI element "correct" based on a screenshot alone.
+Always verify with `evaluate_script` and `getBoundingClientRect()` first.
+
 ## Related Docs
 
 | File | Description | When to consult |

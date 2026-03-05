@@ -25,6 +25,9 @@ build/
 # Kiro files (AI assistant workspace files)
 .kiro/
 
+# Chrome debugging profiles — local only
+.mcp.json
+
 # Claude Code settings file
 settings.local.json
 settings.json
