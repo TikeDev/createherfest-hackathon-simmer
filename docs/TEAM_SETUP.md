@@ -10,38 +10,70 @@
 
 ---
 
-## ♿ Accessibility Agents (setup required, below)
+## ♿ Accessibility Agents (manual invocation)
 
 Simmer is built for users with physical and cognitive disabilities. Accessibility isn't a nice-to-have — it's the core product requirement, otherwise we're failing the people we're building it for.
 
-This project enforces WCAG AA accessibility standards via Claude Code hooks. When enabled, Claude will automatically consult accessibility specialist agents before writing or editing any UI code. This ensures every teammate's Claude follows the same accessibility standards without relying on anyone remembering to check manually.
+### Why we switched from automatic hooks
 
-**How it works:**
-- A `UserPromptSubmit` hook detects UI-related prompts and reminds Claude to delegate to the accessibility-lead agent
-- A `PreToolUse` hook blocks edits to UI files until the accessibility-lead has been consulted
-- A `PostToolUse` hook unlocks the edit gate after the accessibility-lead completes
+We previously enforced accessibility via Claude Code hooks that automatically blocked UI edits until an accessibility-lead agent reviewed them. This worked well for quality, but consumed a lot of tokens on every single prompt — even for small tweaks or non-visual changes. With the hackathon deadline approaching, we switched to manual invocation to save tokens while keeping the same agents available.
 
-### ⚠️ Setup (do this before continuing any UI work!)
+### How to use accessibility agents
 
-**Please complete this before writing or reviewing any UI code.** Without these hooks, Claude may produce inaccessible components that need to be reworked later — costing time we don't have before the deadline.
+Invoke them with slash commands in Claude Code when you're working on UI:
 
-1. **Copy the settings template:**
-   ```bash
-   cp .claude/settings.json.example .claude/settings.json
-   ```
-   This gives you the hook configuration and base permissions. The hooks reference scripts in `.claude/hooks/` which are already committed to the repo.
+| Command | What it checks | Use when... |
+|---------|---------------|-------------|
+| `/aria` | ARIA roles, states, properties | Building custom widgets, interactive components |
+| `/contrast` | Color contrast ratios, visual design | Choosing colors, creating themes, dark mode |
+| `/keyboard` | Tab order, focus management, shortcuts | Adding interactive elements, navigation |
+| `/forms` | Labels, validation, error handling | Building any form or input |
+| `/modal` | Focus trap, escape, return focus | Adding dialogs, drawers, overlays |
+| `/alt-text` | Image alt text, heading hierarchy | Adding images, SVGs, headings |
+| `/live-region` | Dynamic content announcements | Toasts, loading states, AJAX updates |
+| `/tables` | Table headers, scope, caption | Any data table |
+| `/links` | Ambiguous link text detection | Pages with hyperlinks |
+| `/cognitive` | Plain language, COGA guidance | UX clarity, cognitive load review |
+| `/audit` | **Full WCAG audit** (all domains) | Pre-ship comprehensive review |
 
-2. **Restart Claude Code** so it picks up the new settings.
+**Rule of thumb:** Use specific commands for targeted checks during development. Use `/audit` for a comprehensive review before shipping or merging a PR with significant UI changes.
 
-That's it. Claude will now automatically enforce accessibility checks on every UI task.
+### Re-enabling automatic hooks (optional)
 
-### What it looks like in practice
+The hook scripts are still in `.claude/hooks/`. If you prefer automatic enforcement, add these entries to your `.claude/settings.json` inside the `"hooks"` object:
 
-When you ask Claude to build or modify a component, you'll see it delegate to the `accessibility-lead` agent before making edits. The lead coordinates specialists (ARIA, keyboard nav, contrast, forms, etc.) based on what the task requires. See the decision matrix in `CLAUDE.md` under "Accessibility-First Development" for the full list of specialists and when each is used.
+```json
+"PreToolUse": [
+  {
+    "matcher": "Edit|Write",
+    "hooks": [
+      {
+        "type": "command",
+        "command": "bash .claude/hooks/a11y-enforce-edit.sh",
+        "timeout": 5000
+      }
+    ]
+  }
+],
+"PostToolUse": [
+  {
+    "matcher": "Agent",
+    "hooks": [
+      {
+        "type": "command",
+        "command": "bash .claude/hooks/a11y-mark-reviewed.sh",
+        "timeout": 5000
+      }
+    ]
+  }
+]
+```
+
+Then restart Claude Code. This will block UI file edits until you delegate to the `accessibility-lead` agent, just like before.
 
 ### Customizing
 
-- **Sound notifications** — The template includes `afplay` hooks that play sounds on permission requests and task completion. These are macOS-only. Remove or replace them if you're on another OS.
+- **Sound notifications** — The settings template includes `afplay` hooks that play sounds on permission requests and task completion. These are macOS-only. Remove or replace them if you're on another OS.
 - **Additional permissions** — Add Chrome DevTools MCP permissions or other tool permissions to your own `.claude/settings.local.json` (gitignored) rather than editing `settings.json`.
 
 ---
