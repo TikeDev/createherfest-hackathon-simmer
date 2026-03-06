@@ -113,22 +113,5 @@ These must never be violated:
 | [docs/CHROME_DEVTOOLS_MCP_ONBOARDING.md](docs/CHROME_DEVTOOLS_MCP_ONBOARDING.md) | DevTools MCP patterns, debugging sequences, anti-patterns | Debugging UI, inspecting DOM/console/network, verifying element position |
 | [docs/TEAM_SETUP.md](docs/TEAM_SETUP.md) | Accessibility agent usage tips, tool setup, DevTools MCP install | Building or reviewing UI components, onboarding, re-enabling a11y hooks |
 
-## Accessibility Agents (Manual)
 
-Accessibility specialist agents are available on demand. Invoke them with slash commands when needed:
-
-| Command | What it checks |
-|---------|---------------|
-| `/aria` | ARIA roles, states, properties |
-| `/contrast` | Color contrast, themes, visual design |
-| `/keyboard` | Tab order, focus management |
-| `/forms` | Labels, validation, error handling |
-| `/modal` | Focus trap, escape, return focus |
-| `/alt-text` | Image alt text, heading hierarchy |
-| `/live-region` | Dynamic content announcements |
-| `/audit` | Full WCAG audit (all domains) |
-
-**When to invoke:** For new components, run `/aria` + `/keyboard` at minimum. Add `/contrast` for custom colors, `/forms` for inputs, `/modal` for overlays. For existing UI changes, `/keyboard` is usually enough. Save `/audit` for batch reviews — it runs all specialists and is token-heavy.
-
-See [docs/TEAM_SETUP.md](docs/TEAM_SETUP.md) for the full command list, practical tips, and how to re-enable automatic hooks.
 
