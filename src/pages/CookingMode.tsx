@@ -50,6 +50,7 @@ const Btn = ({
     }
     return (
         <button
+            disabled={disabled}
             onClick={disabled ? undefined : onClick}
             style={{
                 ...styles[variant],
@@ -93,11 +94,11 @@ const STAGES: { key: Stage; icon: string; label: string }[] = [
 const StageBar = ({ current }: { current: Stage }) => {
     const currentIdx = STAGES.findIndex(s => s.key === current)
     return (
-        <div style={{ padding: '14px 48px', backgroundColor: C.white, borderBottom: `1px solid ${C.mist}`, display: 'flex', alignItems: 'center' }}>
+        <nav aria-label="Cooking stages" style={{ padding: '14px 48px', backgroundColor: C.white, borderBottom: `1px solid ${C.mist}`, display: 'flex', alignItems: 'center' }}>
             {STAGES.map((s, i) => (
-                <div key={s.key} style={{ display: 'flex', alignItems: 'center', flex: i < 4 ? 1 : 0 }}>
+                <div key={s.key} aria-current={i === currentIdx ? 'step' : undefined} style={{ display: 'flex', alignItems: 'center', flex: i < 4 ? 1 : 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <div style={{
+                        <div aria-hidden="true" style={{
                             width: 34, height: 34, borderRadius: '50%', display: 'flex',
                             alignItems: 'center', justifyContent: 'center', fontSize: 15,
                             backgroundColor: i === currentIdx ? C.sage : i < currentIdx ? C.sageLight : C.mist,
@@ -114,7 +115,7 @@ const StageBar = ({ current }: { current: Stage }) => {
                     {i < 4 && <div style={{ flex: 1, height: 2, margin: '0 10px', backgroundColor: i < currentIdx ? C.sageLight : C.mist }} />}
                 </div>
             ))}
-        </div>
+        </nav>
     )
 }
 
@@ -187,7 +188,11 @@ function GroceriesStage({ recipe, onNext, onBack }: { recipe: RecipeJSON; onNext
     const renderIngredient = (ing: Ingredient, isLast: boolean) => (
         <div
             key={ing.id}
+            role="checkbox"
+            aria-checked={!!checked[ing.id]}
+            tabIndex={0}
             onClick={() => toggle(ing.id)}
+            onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggle(ing.id) } }}
             style={{
                 display: 'flex', alignItems: 'center', gap: 16, padding: '15px 22px',
                 cursor: 'pointer', opacity: checked[ing.id] ? 0.4 : 1, transition: 'all 0.2s',
@@ -195,7 +200,7 @@ function GroceriesStage({ recipe, onNext, onBack }: { recipe: RecipeJSON; onNext
                 backgroundColor: checked[ing.id] ? C.sagePale : 'transparent',
             }}
         >
-            <div style={{
+            <div aria-hidden="true" style={{
                 width: 22, height: 22, borderRadius: 6, flexShrink: 0,
                 backgroundColor: checked[ing.id] ? C.sage : 'transparent',
                 border: `2px solid ${checked[ing.id] ? C.sage : C.mist}`,
@@ -326,10 +331,10 @@ function StepStage({
                 </div>
             }
             progressBar={
-                <div style={{ display: 'flex', gap: 8, marginTop: 20 }}>
+                <div role="group" aria-label={`Step ${idx + 1} of ${steps.length}`} style={{ display: 'flex', gap: 8, marginTop: 20 }}>
                     {steps.map((_, i) => (
-                        <div key={i} onClick={() => { setTipOpen(false); setIdx(i) }}
-                            style={{ height: 4, flex: 1, borderRadius: 2, cursor: 'pointer', transition: 'background 0.2s', backgroundColor: i <= idx ? C.sage : C.mist }} />
+                        <button key={i} aria-label={`Go to step ${i + 1}`} aria-current={i === idx ? 'step' : undefined} onClick={() => { setTipOpen(false); setIdx(i) }}
+                            style={{ height: 4, flex: 1, borderRadius: 2, cursor: 'pointer', transition: 'background 0.2s', backgroundColor: i <= idx ? C.sage : C.mist, border: 'none', padding: 0 }} />
                     ))}
                 </div>
             }
@@ -364,7 +369,7 @@ function CircularTimer({ timeLeft, totalSeconds, paused, done, onPause, onUnpaus
         <Card style={{ padding: 28, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
             {/* Circle */}
             <div style={{ position: 'relative', width: 200, height: 200 }}>
-                <svg width="200" height="200" style={{ transform: 'rotate(-90deg)' }}>
+                <svg width="200" height="200" aria-hidden="true" style={{ transform: 'rotate(-90deg)' }}>
                     {/* Track */}
                     <circle cx="100" cy="100" r={RADIUS} fill="none" stroke={C.mist} strokeWidth="10" />
                     {/* Progress */}
@@ -528,10 +533,13 @@ function CookStage({ steps, onNext, onBack }: { steps: Step[]; onNext: () => voi
                         />
                     )}
 
-                    <div style={{ display: 'flex', gap: 8, marginTop: 20 }}>
+                    <div role="group" aria-label={`Step ${idx + 1} of ${steps.length}`} style={{ display: 'flex', gap: 8, marginTop: 20 }}>
                         {steps.map((_, i) => (
-                            <div key={i} style={{ height: 4, flex: 1, borderRadius: 2, backgroundColor: i <= idx ? C.sage : C.mist }} />
+                            <div key={i} aria-hidden="true" style={{ height: 4, flex: 1, borderRadius: 2, backgroundColor: i <= idx ? C.sage : C.mist }} />
                         ))}
+                        <span style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap' }}>
+                            Step {idx + 1} of {steps.length}
+                        </span>
                     </div>
                 </div>
             }
@@ -568,9 +576,9 @@ function ServeStage({ recipe, onComplete, onBack }: { recipe: RecipeJSON; onComp
                 <Card style={{ marginBottom: 28 }}>
                     <div style={{ fontSize: 18, fontWeight: 700, color: C.forest, marginBottom: 4 }}>How complex did this feel?</div>
                     <div style={{ fontSize: 13, color: C.textMuted, marginBottom: 22 }}>Your rating helps improve future matches</div>
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: 14, marginBottom: 14 }}>
+                    <div role="radiogroup" aria-label="Complexity rating" style={{ display: 'flex', justifyContent: 'center', gap: 14, marginBottom: 14 }}>
                         {[1, 2, 3, 4, 5].map(n => (
-                            <button key={n} onClick={() => setRating(n)} style={{
+                            <button key={n} role="radio" aria-checked={rating === n} aria-label={`${n} out of 5 stars`} onClick={() => setRating(n)} style={{
                                 width: 54, height: 54, borderRadius: 14, border: 'none',
                                 backgroundColor: rating >= n ? C.sage : C.mist,
                                 cursor: 'pointer', fontSize: 22, transition: 'all 0.15s',
@@ -630,8 +638,11 @@ export function CookingMode({ recipe, onComplete, onBack }: Props) {
 
     return (
         <div style={{ minHeight: '100vh', backgroundColor: C.cream, fontFamily: "'Nunito', 'Segoe UI', sans-serif" }}>
+            <h1 style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap' }}>
+                Cooking: {recipe.title}
+            </h1>
             {/* Nav */}
-            <nav style={{ backgroundColor: C.white, borderBottom: `1px solid ${C.mist}`, padding: '0 48px', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 100, boxShadow: '0 1px 8px rgba(45,59,53,0.06)' }}>
+            <nav aria-label="Cooking mode" style={{ backgroundColor: C.white, borderBottom: `1px solid ${C.mist}`, padding: '0 48px', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 100, boxShadow: '0 1px 8px rgba(45,59,53,0.06)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <span style={{ fontSize: 22 }}>🌿</span>
                     <span style={{ fontSize: 20, fontWeight: 900, color: C.forest, fontFamily: "'Lora', Georgia, serif" }}>Simmer</span>
@@ -662,7 +673,7 @@ export default function CookingModeWrapper() {
     const recipe = useRecipe(id ?? '')
 
     if (!recipe) return (
-        <div style={{ padding: 40, fontFamily: "'Nunito', sans-serif", color: '#7A8C84', textAlign: 'center' }}>
+        <div role="status" style={{ padding: 40, fontFamily: "'Nunito', sans-serif", color: '#7A8C84', textAlign: 'center' }}>
             Simmer is thinking...
         </div>
     )

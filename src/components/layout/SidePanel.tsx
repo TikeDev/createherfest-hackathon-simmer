@@ -4,6 +4,23 @@ import { useViewPreferences, FONT_SIZE_MIN, FONT_SIZE_MAX } from '@/contexts/Vie
 import { getAllRecipes } from '@/storage/recipes'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 
+/** Arrow-key handler for roving tabindex radio groups */
+function handleRadioKeyDown<T>(e: React.KeyboardEvent, options: T[], current: T, onChange: (val: T) => void) {
+  const idx = options.indexOf(current)
+  if (idx === -1) return
+  let next: number | null = null
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (idx + 1) % options.length
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (idx - 1 + options.length) % options.length
+  if (next !== null) {
+    e.preventDefault()
+    onChange(options[next])
+    // Focus the newly selected radio button
+    const group = (e.target as HTMLElement).closest('[role="radiogroup"]')
+    const buttons = group?.querySelectorAll<HTMLElement>('[role="radio"]')
+    buttons?.[next]?.focus()
+  }
+}
+
 interface SidePanelProps {
   isOpen: boolean
   onClose: () => void
@@ -83,16 +100,17 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
     <div
       ref={panelRef}
       id="side-panel"
-      role={isMobile ? 'dialog' : 'navigation'}
+      role={isMobile ? 'dialog' : 'region'}
       aria-modal={isMobile ? true : undefined}
-      aria-label="Main menu"
+      aria-labelledby={isMobile ? 'side-panel-title' : undefined}
+      aria-label={isMobile ? undefined : 'Settings sidebar'}
       className={`flex h-full w-72 flex-col bg-white border-mist-pale overflow-y-auto dark:bg-[#1e2d28] dark:border-forest ${
         prefs.panelSide === 'left' ? 'border-r' : 'border-l'
       }`}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-5 pb-4">
-        <span className="text-xl font-headline text-sage">Simmer</span>
+        <span id="side-panel-title" className="text-xl font-headline text-sage">Simmer</span>
         {isMobile && (
           <button
             ref={closeButtonRef}
@@ -121,7 +139,7 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
             <span aria-hidden="true">&#x1F4D6;</span>
             Saved Recipes
           </span>
-          <span className="rounded-full bg-sage/10 px-2 py-0.5 text-xs font-semibold text-sage">
+          <span className="rounded-full bg-sage/10 px-2 py-0.5 text-xs font-semibold text-sage" aria-label={`${recipeCount} recipes saved`}>
             {recipeCount}
           </span>
         </div>
@@ -136,14 +154,14 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
 
       {/* Display Settings */}
       <div className="px-4 space-y-5">
-        <h2 className="text-xs font-bold uppercase tracking-wider text-forest/50 dark:text-cream/50">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-forest/80 dark:text-cream/80">
           Display Settings
-        </h2>
+        </h3>
 
         {/* Font Size Stepper */}
-        <div className="space-y-2">
-          <span className="text-xs font-semibold text-forest/70 dark:text-cream/70">Font Size</span>
-          <div className="flex items-center gap-3">
+        <div className="space-y-2" role="group" aria-labelledby="font-size-label">
+          <span id="font-size-label" className="text-xs font-semibold text-forest/80 dark:text-cream/80">Font Size</span>
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => updatePrefs({ fontSize: prefs.fontSize - 1 })}
@@ -179,8 +197,8 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
 
         {/* Font Family */}
         <fieldset className="space-y-2">
-          <legend className="text-xs font-semibold text-forest/70 dark:text-cream/70">Font Family</legend>
-          <div className="flex gap-1" role="radiogroup" aria-label="Font family">
+          <legend className="text-xs font-semibold text-forest/80 dark:text-cream/80">Font Family</legend>
+          <div className="flex gap-1" role="radiogroup">
             {FONT_FAMILY_OPTIONS.map((opt) => {
               const selected = prefs.fontFamily === opt.value
               return (
@@ -189,7 +207,9 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
                   type="button"
                   role="radio"
                   aria-checked={selected}
+                  tabIndex={selected ? 0 : -1}
                   onClick={() => updatePrefs({ fontFamily: opt.value })}
+                  onKeyDown={(e) => handleRadioKeyDown(e, FONT_FAMILY_OPTIONS.map(o => o.value), prefs.fontFamily, (v) => updatePrefs({ fontFamily: v }))}
                   className={`flex-1 rounded-lg px-2 py-1.5 text-xs font-medium motion-safe:transition-colors ${
                     selected
                       ? 'bg-sage text-white'
@@ -208,11 +228,12 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
 
         {/* Contrast */}
         <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold text-forest/70 dark:text-cream/70">High Contrast</span>
+          <span id="high-contrast-label" className="text-xs font-semibold text-forest/80 dark:text-cream/80">High Contrast</span>
           <button
             type="button"
             role="switch"
             aria-checked={prefs.contrastMode === 'high'}
+            aria-labelledby="high-contrast-label"
             onClick={() => updatePrefs({ contrastMode: prefs.contrastMode === 'high' ? 'default' : 'high' })}
             className={`relative h-6 w-11 rounded-full motion-safe:transition-colors focus:outline-none focus:ring-2 focus:ring-sage focus:ring-offset-2 ${
               prefs.contrastMode === 'high' ? 'bg-sage' : 'bg-mist-pale dark:bg-forest'
@@ -229,8 +250,8 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
 
         {/* Color Blind Mode */}
         <fieldset className="space-y-2">
-          <legend className="text-xs font-semibold text-forest/70 dark:text-cream/70">Color Blind Mode</legend>
-          <div className="flex gap-1" role="radiogroup" aria-label="Color blind mode">
+          <legend className="text-xs font-semibold text-forest/80 dark:text-cream/80">Color Blind Mode</legend>
+          <div className="flex gap-1" role="radiogroup">
             {COLORBLIND_OPTIONS.map((opt) => {
               const selected = prefs.colorBlindMode === opt.value
               return (
@@ -239,7 +260,9 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
                   type="button"
                   role="radio"
                   aria-checked={selected}
+                  tabIndex={selected ? 0 : -1}
                   onClick={() => updatePrefs({ colorBlindMode: opt.value })}
+                  onKeyDown={(e) => handleRadioKeyDown(e, COLORBLIND_OPTIONS.map(o => o.value), prefs.colorBlindMode, (v) => updatePrefs({ colorBlindMode: v }))}
                   className={`flex-1 rounded-lg px-2 py-1.5 text-xs font-medium motion-safe:transition-colors ${
                     selected
                       ? 'bg-sage text-white'
@@ -258,17 +281,20 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
       <hr className="mx-4 my-4 border-mist-pale dark:border-forest" />
 
       {/* Panel Position */}
-      <div className="px-4 space-y-2">
-        <span className="text-xs font-semibold text-forest/70 dark:text-cream/70">Panel Position</span>
-        <div className="flex gap-1">
+      <fieldset className="px-4 space-y-2">
+        <legend className="text-xs font-semibold text-forest/80 dark:text-cream/80">Panel Position</legend>
+        <div className="flex gap-1" role="radiogroup">
           {(['left', 'right'] as const).map((side) => {
             const selected = prefs.panelSide === side
             return (
               <button
                 key={side}
                 type="button"
-                aria-pressed={selected}
+                role="radio"
+                aria-checked={selected}
+                tabIndex={selected ? 0 : -1}
                 onClick={() => updatePrefs({ panelSide: side })}
+                onKeyDown={(e) => handleRadioKeyDown(e, ['left', 'right'] as const, prefs.panelSide, (v) => updatePrefs({ panelSide: v }))}
                 className={`flex-1 rounded-lg px-3 py-1.5 text-xs font-medium capitalize motion-safe:transition-colors ${
                   selected
                     ? 'bg-sage text-white'
@@ -280,7 +306,7 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
             )
           })}
         </div>
-      </div>
+      </fieldset>
 
       {/* Spacer */}
       <div className="flex-1" />
@@ -289,7 +315,9 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
       <div className="px-4 py-4 border-t border-mist-pale dark:border-forest">
         <button
           type="button"
-          className="text-xs text-forest/50 hover:text-sage motion-safe:transition-colors dark:text-cream/50 dark:hover:text-sage"
+          disabled
+          aria-label="About Simmer (coming soon)"
+          className="text-xs text-forest/80 hover:text-sage motion-safe:transition-colors disabled:opacity-50 disabled:cursor-not-allowed dark:text-cream/80 dark:hover:text-sage"
         >
           About Simmer
         </button>

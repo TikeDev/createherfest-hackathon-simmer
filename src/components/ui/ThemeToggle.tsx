@@ -37,8 +37,8 @@ export default function ThemeToggle({ compact = false }: ThemeToggleProps) {
 
   return (
     <fieldset className="space-y-2">
-      <legend className="text-xs font-semibold text-forest/70 dark:text-cream/70">Theme</legend>
-      <div className="flex gap-1" role="radiogroup" aria-label="Theme">
+      <legend className="text-xs font-semibold text-forest/80 dark:text-cream/80">Theme</legend>
+      <div className="flex gap-1" role="radiogroup">
         {THEME_OPTIONS.map((opt) => {
           const selected = prefs.theme === opt.value
           return (
@@ -47,7 +47,21 @@ export default function ThemeToggle({ compact = false }: ThemeToggleProps) {
               type="button"
               role="radio"
               aria-checked={selected}
+              tabIndex={selected ? 0 : -1}
               onClick={() => updatePrefs({ theme: opt.value })}
+              onKeyDown={(e) => {
+                const values = THEME_OPTIONS.map(o => o.value)
+                const idx = values.indexOf(prefs.theme)
+                let next: number | null = null
+                if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (idx + 1) % values.length
+                if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (idx - 1 + values.length) % values.length
+                if (next !== null) {
+                  e.preventDefault()
+                  updatePrefs({ theme: values[next] })
+                  const group = (e.target as HTMLElement).closest('[role="radiogroup"]')
+                  group?.querySelectorAll<HTMLElement>('[role="radio"]')?.[next]?.focus()
+                }
+              }}
               className={`flex-1 rounded-lg px-2 py-1.5 text-xs font-medium motion-safe:transition-colors ${
                 selected
                   ? 'bg-sage text-white'

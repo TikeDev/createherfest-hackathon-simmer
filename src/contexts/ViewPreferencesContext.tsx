@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, useCallback } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react'
 import type { ReactNode } from 'react'
 
 export interface ViewPreferences {
@@ -102,9 +102,23 @@ function manageDyslexicFont(fontFamily: string) {
 
 const ViewPreferencesContext = createContext<ViewPreferencesContextValue | null>(null)
 
+/** Build a human-readable announcement for a preference change */
+function describeChange(patch: Partial<ViewPreferences>): string | null {
+  const parts: string[] = []
+  if (patch.theme) parts.push(`Theme changed to ${patch.theme}`)
+  if (patch.contrastMode) parts.push(patch.contrastMode === 'high' ? 'High contrast enabled' : 'High contrast disabled')
+  if (patch.fontFamily) parts.push(`Font changed to ${patch.fontFamily}`)
+  if (patch.colorBlindMode) parts.push(patch.colorBlindMode === 'off' ? 'Color blind mode disabled' : `Color blind mode: ${patch.colorBlindMode}`)
+  if (patch.panelSide) parts.push(`Panel moved to ${patch.panelSide}`)
+  // fontSize is handled by existing aria-live in SidePanel
+  return parts.length > 0 ? parts.join('. ') : null
+}
+
 export function ViewPreferencesProvider({ children }: { children: ReactNode }) {
   const [prefs, setPrefs] = useState<ViewPreferences>(loadPrefs)
   const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>(getSystemTheme)
+  const [announcement, setAnnouncement] = useState('')
+  const announcementTimeout = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   const resolvedTheme = prefs.theme === 'system' ? systemTheme : prefs.theme
 
@@ -132,11 +146,26 @@ export function ViewPreferencesProvider({ children }: { children: ReactNode }) {
       }
       return next
     })
+    // Announce the change for screen readers
+    const msg = describeChange(patch)
+    if (msg) {
+      clearTimeout(announcementTimeout.current)
+      setAnnouncement(msg)
+      announcementTimeout.current = setTimeout(() => setAnnouncement(''), 3000)
+    }
   }, [])
 
   return (
     <ViewPreferencesContext.Provider value={{ prefs, updatePrefs, resolvedTheme }}>
       {children}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap' }}
+      >
+        {announcement}
+      </div>
     </ViewPreferencesContext.Provider>
   )
 }
