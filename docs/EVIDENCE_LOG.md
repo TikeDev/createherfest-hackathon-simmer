@@ -20,7 +20,8 @@ Target: Minimum 3 credible sources; aim for 10–15 total entries.
 
 | Item / Claim | Purpose in Project | Source Link | Type | License / Attribution | Notes |
 | :---- | :---- | :---- | :---- | :---- | :---- |
-| \[e.g., React\] | Frontend framework | [https://react.dev](https://react.dev/) | Code | MIT License | v18.2.0 |
+| React | Frontend framework | [https://react.dev](https://react.dev/) | Code | MIT License | v19.2.4 |
+| TailwindCSS | CSS styling framework | [https://tailwindcss.com/](https://tailwindcss.com/) | Code | MIT License | v3.4.19 |
 |  |  |  |  |  |  |
 |  |  |  |  |  |  |
 |  |  |  |  |  |  |

@@ -25,12 +25,25 @@
 | :---- | :---- | :---- |
 | **UX Design** | **"Simmer Coach" calm-voice branding** → Users with chronic or cognitive limitations are already managing stress; a warm, low-pressure coach tone reduces friction at the entry point and signals the app is built *for* them, not just *about* accessibility. | Softer brand voice may understate the AI complexity to judges; mitigated by the decision log and technical docs. |
 | **Tech Stack** | **\[Decision\]** → \[Reasoning\] | \[e.g., Higher cost, bundle size, or learning curve\] |
+| **Tech Stack** | **Vite** → Simple to set up boilerplate code and project scaffolding, efficient project file bundling for deployment | \[e.g., Higher cost, bundle size, or learning curve\] |
+| **Tech Stack** | **React** → Easy for coding agent to write and debug, modern UI components and styles | \[Tradeoff\] |
+| **Tech Stack** | **TailwindCSS** → Modern styling, easy for coding agent to implement and for us to read and update | \[Tradeoff\] |
+| **Tech Stack** | **Vercel for Deployment** → Good free tier, automatic updated deployment upon “git push” | \[Tradeoff\] |
+| **Tech Stack** | **recipe-scraper Python library** → \[Reasoning\] | \[Tradeoff\] |
+| **Tech Stack** | **\[Decision\]** → \[Reasoning\] | \[Tradeoff\] |
 | **Tech Stack** | **\[Decision\]** → \[Reasoning\] | \[Tradeoff\] |
 | **Architecture** | **\[Decision\]** → \[Reasoning\] | \[e.g., Limited scalability or higher latency\] |
 | **Architecture** | **\[Decision\]** → \[Reasoning\] | \[Tradeoff\] |
+| **Architecture** | **\[Decision\]** → \[Reasoning\] | \[Tradeoff\] |
+| **Architecture** | **\[Decision\]** → \[Reasoning\] | \[Tradeoff\] |
+| **AI Integration** | *OpenAI gpt-5-nano for recipe formatter agent* → Cheap/effective enough to enrich data and organize extracted recipe info | Smart recipe formatting would not work offline |
+| **AI Integration** | **\[Decision\]** → \[Reasoning\] | \[e.g., Rate limits or response speed\] |
 | **AI Integration** | **\[Decision\]** → \[Reasoning\] | \[e.g., Rate limits or response speed\] |
 | **Feature Scope** | **\[Decision\]** → \[Reasoning\] | \[e.g., Cut feature X to ensure stability of Y\] |
+| **Feature Scope** | **\[Decision\]** → \[Reasoning\] | \[e.g., Cut feature X to ensure stability of Y\] |
 | **Third-Party** | **\[Decision\]** → \[Reasoning\] | \[Tradeoff\] |
+| **Third-Party** | **\[Decision\]** → \[Reasoning\] | \[Tradeoff\] |
+| **Process** | **\[Decision\]** → \[Reasoning\] | \[Tradeoff\] |
 | **Process** | **\[Decision\]** → \[Reasoning\] | \[Tradeoff\] |
 
 ---
