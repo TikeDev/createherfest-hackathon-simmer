@@ -1,6 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { getAllRecipes } from '@/storage/recipes'
+import { useRecipeFilters } from '@/hooks/useRecipeFilters'
+import RecipeToolbar from '@/components/recipes/RecipeToolbar'
+import RecipeCard from '@/components/recipes/RecipeCard'
 import type { RecipeJSON } from '@/types/recipe'
 import type { EnergyLevel } from './Landing'
 
@@ -8,15 +11,6 @@ const ENERGY_LABELS: Record<EnergyLevel, string> = {
   low:    '🌿 Low energy',
   medium: '☀️ Medium energy',
   high:   '⚡ Feeling good',
-}
-
-function sortByEnergy(recipes: RecipeJSON[], energy: EnergyLevel | null): RecipeJSON[] {
-  if (!energy || energy === 'medium') return recipes
-  return [...recipes].sort((a, b) => {
-    const aMin = a.metadata.totalTimeMinutes ?? 999
-    const bMin = b.metadata.totalTimeMinutes ?? 999
-    return energy === 'low' ? aMin - bMin : bMin - aMin
-  })
 }
 
 export default function Home() {
@@ -28,11 +22,61 @@ export default function Home() {
   const [recipes, setRecipes] = useState<RecipeJSON[]>([])
   const [loading, setLoading] = useState(true)
 
+  const searchRef = useRef<HTMLInputElement>(null)
+  const liveRef = useRef<HTMLDivElement>(null)
+  const announceTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
+
   useEffect(() => {
     getAllRecipes()
-      .then((all) => setRecipes(sortByEnergy(all, session?.energy ?? null)))
+      .then((all) => setRecipes(all))
       .finally(() => setLoading(false))
   }, [])
+
+  const {
+    query,
+    setQuery,
+    sortField,
+    setSortField,
+    filters,
+    setFilter,
+    resetFilters,
+    filteredRecipes,
+    resultCount,
+    totalCount,
+    availableDomains,
+    hasActiveFilters,
+  } = useRecipeFilters(recipes)
+
+  // Debounced live region announcement
+  const announce = useCallback(
+    (text: string) => {
+      clearTimeout(announceTimer.current)
+      announceTimer.current = setTimeout(() => {
+        if (liveRef.current) liveRef.current.textContent = text
+      }, 300)
+    },
+    [],
+  )
+
+  useEffect(() => {
+    if (loading) return
+    if (totalCount === 0) return
+    const text =
+      resultCount === totalCount
+        ? `${totalCount} recipes`
+        : resultCount === 0
+          ? 'No recipes match your search'
+          : `Showing ${resultCount} of ${totalCount} recipes`
+    announce(text)
+  }, [resultCount, totalCount, loading, announce])
+
+  // Cleanup timer
+  useEffect(() => () => clearTimeout(announceTimer.current), [])
+
+  const handleResetFilters = () => {
+    resetFilters()
+    searchRef.current?.focus()
+  }
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
@@ -77,7 +121,7 @@ export default function Home() {
         </p>
       )}
 
-      {!loading && recipes.length === 0 && (
+      {!loading && totalCount === 0 && (
         <div className="rounded-lg border border-dashed border-mist-pale px-6 py-12 text-center space-y-3">
           <p className="text-forest/60 text-sm dark:text-cream/60">No recipes yet.</p>
           <Link
@@ -89,41 +133,54 @@ export default function Home() {
         </div>
       )}
 
-      {!loading && recipes.length > 0 && (
-        <ul className="space-y-3">
-          {recipes.map((recipe) => {
-            const savedDate = new Date(recipe.extractedAt).toLocaleDateString(undefined, {
-              month: 'short',
-              day: 'numeric',
-            })
-            return (
-              <li key={recipe.id}>
-                <Link
-                  to={`/recipe/${recipe.id}`}
-                  className="block rounded-lg border border-mist-pale bg-surface px-4 py-4 hover:border-mist hover:shadow-sm transition-all"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <h2 className="font-headline text-forest text-sm leading-snug">
-                      {recipe.title}
-                    </h2>
-                    <span className="flex-shrink-0 text-xs text-forest/50">{savedDate}</span>
-                  </div>
-                  <div className="mt-1 flex flex-wrap gap-3 text-xs text-forest/50">
-                    {recipe.sourceDomain && recipe.sourceDomain !== 'demo' && (
-                      <span>{recipe.sourceDomain}</span>
-                    )}
-                    {recipe.metadata.totalTimeMinutes && (
-                      <span>{recipe.metadata.totalTimeMinutes} min</span>
-                    )}
-                    {recipe.metadata.servings && <span>Serves {recipe.metadata.servings}</span>}
-                    <span>{recipe.ingredients.length} ingredients</span>
-                    <span>{recipe.steps.length} steps</span>
-                  </div>
-                </Link>
-              </li>
-            )
-          })}
-        </ul>
+      {!loading && totalCount > 0 && (
+        <>
+          {/* Search, sort, filter toolbar */}
+          <RecipeToolbar
+            query={query}
+            onQueryChange={setQuery}
+            sortField={sortField}
+            onSortChange={setSortField}
+            filters={filters}
+            onFilterChange={setFilter}
+            onReset={handleResetFilters}
+            hasActiveFilters={hasActiveFilters}
+            availableDomains={availableDomains}
+            searchRef={searchRef}
+          />
+
+          {/* Live region for screen reader announcements */}
+          <div ref={liveRef} role="status" aria-live="polite" aria-atomic="true" className="sr-only" />
+
+          {/* Visible results count */}
+          {resultCount !== totalCount && (
+            <p className="text-xs text-forest/50 dark:text-cream/50">
+              Showing {resultCount} of {totalCount} recipes
+            </p>
+          )}
+
+          {/* Recipe list */}
+          {filteredRecipes.length > 0 ? (
+            <ul className="space-y-3">
+              {filteredRecipes.map((recipe) => (
+                <RecipeCard key={recipe.id} recipe={recipe} />
+              ))}
+            </ul>
+          ) : (
+            <div className="rounded-lg border border-dashed border-mist-pale px-6 py-12 text-center space-y-3">
+              <p className="text-forest/60 text-sm dark:text-cream/60">
+                No recipes match your search.
+              </p>
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                className="text-sm text-sage font-medium underline hover:text-sage-dark focus:outline-none focus:ring-2 focus:ring-sage"
+              >
+                Clear all filters
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   )

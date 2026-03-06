@@ -3,23 +3,7 @@ import { NavLink } from 'react-router-dom'
 import { useViewPreferences, FONT_SIZE_MIN, FONT_SIZE_MAX } from '@/contexts/ViewPreferencesContext'
 import { getAllRecipes } from '@/storage/recipes'
 import ThemeToggle from '@/components/ui/ThemeToggle'
-
-/** Arrow-key handler for roving tabindex radio groups */
-function handleRadioKeyDown<T>(e: React.KeyboardEvent, options: T[], current: T, onChange: (val: T) => void) {
-  const idx = options.indexOf(current)
-  if (idx === -1) return
-  let next: number | null = null
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (idx + 1) % options.length
-  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (idx - 1 + options.length) % options.length
-  if (next !== null) {
-    e.preventDefault()
-    onChange(options[next])
-    // Focus the newly selected radio button
-    const group = (e.target as HTMLElement).closest('[role="radiogroup"]')
-    const buttons = group?.querySelectorAll<HTMLElement>('[role="radio"]')
-    buttons?.[next]?.focus()
-  }
-}
+import { handleRadioKeyDown } from '@/utils/a11y'
 
 interface SidePanelProps {
   isOpen: boolean
@@ -126,7 +110,7 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
 
       {/* Navigation */}
       <nav aria-label="Main navigation" className="px-3 space-y-1">
-        <NavLink to="/recipes" className={navLinkClass} onClick={isMobile ? onClose : undefined}>
+        <NavLink to="/" className={navLinkClass} end onClick={isMobile ? onClose : undefined}>
           <span aria-hidden="true">&#x1F3E0;</span>
           Home
         </NavLink>
@@ -134,15 +118,13 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
           <span aria-hidden="true">&#x2795;</span>
           Add Recipe
         </NavLink>
-        <div className="flex items-center justify-between rounded-lg px-3 py-2 text-sm text-forest/70 dark:text-cream/70">
-          <span className="flex items-center gap-3">
-            <span aria-hidden="true">&#x1F4D6;</span>
-            Saved Recipes
-          </span>
+        <NavLink to="/recipes" className={navLinkClass} onClick={isMobile ? onClose : undefined}>
+          <span aria-hidden="true">&#x1F4D6;</span>
+          <span className="flex-1">Saved Recipes</span>
           <span className="rounded-full bg-sage/10 px-2 py-0.5 text-xs font-semibold text-sage" aria-label={`${recipeCount} recipes saved`}>
             {recipeCount}
           </span>
-        </div>
+        </NavLink>
         <NavLink to="/profile" className={navLinkClass} onClick={isMobile ? onClose : undefined}>
           <span aria-hidden="true">&#x1F464;</span>
           My Profile
