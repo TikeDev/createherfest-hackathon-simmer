@@ -111,6 +111,7 @@ These must never be violated:
 | [docs/plans/Plan_Overview_Diagram.md](docs/plans/Plan_Overview_Diagram.md) | Mermaid architecture diagrams | Understanding system flow at a glance |
 | [PERPLEXITY_GUIDE.md](PERPLEXITY_GUIDE.md) | How the team uses Perplexity Enterprise for research | Before starting research tasks or looking up library docs |
 | [docs/CHROME_DEVTOOLS_MCP_ONBOARDING.md](docs/CHROME_DEVTOOLS_MCP_ONBOARDING.md) | DevTools MCP patterns, debugging sequences, anti-patterns | Debugging UI, inspecting DOM/console/network, verifying element position |
+| [docs/TEAM_SETUP.md](docs/TEAM_SETUP.md) | Accessibility agent usage tips, tool setup, DevTools MCP install | Building or reviewing UI components, onboarding, re-enabling a11y hooks |
 
 ## Accessibility Agents (Manual)
 
@@ -127,5 +128,7 @@ Accessibility specialist agents are available on demand. Invoke them with slash 
 | `/live-region` | Dynamic content announcements |
 | `/audit` | Full WCAG audit (all domains) |
 
-See [docs/TEAM_SETUP.md](docs/TEAM_SETUP.md) for the full list and usage guidance.
+**When to invoke:** For new components, run `/aria` + `/keyboard` at minimum. Add `/contrast` for custom colors, `/forms` for inputs, `/modal` for overlays. For existing UI changes, `/keyboard` is usually enough. Save `/audit` for batch reviews — it runs all specialists and is token-heavy.
+
+See [docs/TEAM_SETUP.md](docs/TEAM_SETUP.md) for the full command list, practical tips, and how to re-enable automatic hooks.
 

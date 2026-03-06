@@ -100,15 +100,15 @@ export default function Home() {
               <li key={recipe.id}>
                 <Link
                   to={`/recipe/${recipe.id}`}
-                  className="block rounded-lg border border-mist-pale bg-surface px-4 py-4 hover:border-mist hover:shadow-sm transition-all dark:border-forest dark:hover:border-mist"
+                  className="block rounded-lg border border-mist-pale bg-surface px-4 py-4 hover:border-mist hover:shadow-sm transition-all"
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <h2 className="font-headline text-forest text-sm leading-snug dark:text-cream">
+                    <h2 className="font-headline text-forest text-sm leading-snug">
                       {recipe.title}
                     </h2>
-                    <span className="flex-shrink-0 text-xs text-forest/50 dark:text-cream/50">{savedDate}</span>
+                    <span className="flex-shrink-0 text-xs text-forest/50">{savedDate}</span>
                   </div>
-                  <div className="mt-1 flex flex-wrap gap-3 text-xs text-forest/50 dark:text-cream/50">
+                  <div className="mt-1 flex flex-wrap gap-3 text-xs text-forest/50">
                     {recipe.sourceDomain && recipe.sourceDomain !== 'demo' && (
                       <span>{recipe.sourceDomain}</span>
                     )}

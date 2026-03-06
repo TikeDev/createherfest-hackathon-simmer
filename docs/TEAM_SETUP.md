@@ -1,7 +1,10 @@
 # Team Setup Guide
 
 ## Table of Contents
-- [♿ Accessibility Agents](#-accessibility-agents)
+- [♿ Accessibility Agents (manual invocation)](#-accessibility-agents-manual-invocation)
+  - [How to use accessibility agents](#how-to-use-accessibility-agents)
+  - [Tips from using the agents](#tips-from-using-the-agents)
+  - [Re-enabling automatic hooks (optional)](#re-enabling-automatic-hooks-optional)
 - [📄 Updating Documentation](#-updating-documentation)
 - [🎨 Claude Code Figma Plugin (MCP + Skills)](#-claude-code-figma-plugin-mcp--skills)
 - [🔍 Chrome DevTools MCP](#-chrome-devtools-mcp)
@@ -37,6 +40,16 @@ Invoke them with slash commands in Claude Code when you're working on UI:
 | `/audit` | **Full WCAG audit** (all domains) | Pre-ship comprehensive review |
 
 **Rule of thumb:** Use specific commands for targeted checks during development. Use `/audit` for a comprehensive review before shipping or merging a PR with significant UI changes.
+
+### Tips from using the agents
+
+These are patterns we've learned from running the agents on this codebase:
+
+- **`/audit` is thorough but token-heavy** — it orchestrates every specialist agent. Save it for batch reviews or pre-ship passes. In one audit of SidePanel, CookingMode, and ThemeToggle it caught 24 issues in a single pass.
+- **For new components:** run `/aria` + `/keyboard` at minimum. Add `/contrast` if it has custom colors, `/forms` if it has inputs, `/modal` if it has overlays.
+- **For modifying existing UI:** `/keyboard` is usually enough unless you changed colors or added new interactive patterns.
+- **Common issues the agents catch:** missing `aria-label` on icon-only buttons, heading level skips, focus not returning after modal close, low contrast on muted/placeholder text, overlapping elements on mobile viewports.
+- **The agents respect your code** — they flag WCAG violations and suggest fixes but don't try to rewrite your component architecture.
 
 ### Re-enabling automatic hooks (optional)
 
