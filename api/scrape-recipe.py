@@ -2,10 +2,6 @@ import json
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse
 
-import requests
-from recipe_scrapers import scrape_html, WebsiteNotImplementedError, NoSchemaFoundInWildMode
-
-
 CORS_HEADERS = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -49,6 +45,42 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_POST(self):
+        try:
+            import requests
+        except ModuleNotFoundError as e:
+            _json_response(
+                self,
+                500,
+                {
+                    "error": (
+                        "Missing Python dependency: requests. "
+                        "Install requirements.txt and restart `vercel dev`."
+                    ),
+                    "details": str(e),
+                },
+            )
+            return
+
+        try:
+            from recipe_scrapers import (
+                NoSchemaFoundInWildMode,
+                WebsiteNotImplementedError,
+                scrape_html,
+            )
+        except ModuleNotFoundError as e:
+            _json_response(
+                self,
+                500,
+                {
+                    "error": (
+                        "Missing Python dependency: recipe-scrapers. "
+                        "Install requirements.txt and restart `vercel dev`."
+                    ),
+                    "details": str(e),
+                },
+            )
+            return
+
         # Parse request body
         content_length = int(self.headers.get("Content-Length", 0))
         raw_body = self.rfile.read(content_length) if content_length > 0 else b""

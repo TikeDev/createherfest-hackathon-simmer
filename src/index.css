@@ -8,4 +8,59 @@
     font-family: 'Nunito', sans-serif;
     color: #2D3B35;
   }
+
+  /* Font family overrides */
+  html[data-font-family="opendyslexic"] body {
+    font-family: 'Open Dyslexic', 'OpenDyslexic', sans-serif;
+  }
+  html[data-font-family="system"] body {
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+
+  /* Dark mode */
+  html[data-theme="dark"] body {
+    background-color: #1a2420;
+    color: #e8f0eb;
+  }
+
+  /* High contrast */
+  html[data-contrast="high"] body {
+    background-color: #fff;
+    color: #000;
+  }
+  html[data-contrast="high"][data-theme="dark"] body {
+    background-color: #000;
+    color: #fff;
+  }
+
+  /* Color blind mode — override brand colors via CSS custom properties */
+  :root {
+    --color-sage: #6B9E78;
+    --color-sage-dark: #4e7a5a;
+    --color-mist: #A8C5B0;
+    --color-mist-pale: #D4E6DA;
+    --color-forest: #2D3B35;
+    --color-cream: #FAF4EF;
+    --color-surface: #EEF5F0;
+  }
+
+  html[data-colorblind="red-green"] {
+    --color-sage: #0077BB;
+    --color-sage-dark: #005588;
+    --color-mist: #88CCEE;
+    --color-mist-pale: #CCEEFF;
+  }
+  html[data-colorblind="blue-yellow"] {
+    --color-sage: #CC6677;
+    --color-sage-dark: #993344;
+    --color-mist: #DDAA77;
+    --color-mist-pale: #EEDDBB;
+  }
+
+  /* Dark mode color adjustments */
+  html[data-theme="dark"] {
+    --color-forest: #e8f0eb;
+    --color-cream: #1a2420;
+    --color-surface: #1e2d28;
+  }
 }

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { getRecipe } from '../storage/recipes'
 import type { RecipeJSON, Step, Ingredient, GroceryCategory } from '../types/recipe'
 import { classifyGroceries } from '../agent/classifyGroceries'
+import ThemeToggle from '../components/ui/ThemeToggle'
 
 
 // ─── Brand tokens ────────────────────────────────────────────────
@@ -635,9 +636,12 @@ export function CookingMode({ recipe, onComplete, onBack }: Props) {
                     <span style={{ fontSize: 22 }}>🌿</span>
                     <span style={{ fontSize: 20, fontWeight: 900, color: C.forest, fontFamily: "'Lora', Georgia, serif" }}>Simmer</span>
                 </div>
-                <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', color: C.sage, fontSize: 14, fontWeight: 700, fontFamily: "'Nunito', sans-serif" }}>
-                    ✕ Exit cooking mode
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <ThemeToggle compact />
+                    <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', color: C.sage, fontSize: 14, fontWeight: 700, fontFamily: "'Nunito', sans-serif" }}>
+                        ✕ Exit cooking mode
+                    </button>
+                </div>
             </nav>
 
             {/* Stage bar */}

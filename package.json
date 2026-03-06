@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
+    "setup:python": "python3 -m pip install -r requirements.txt",
     "dev": "vite",
     "dev:full": "vercel dev --yes --listen 5173",
     "dev:browser": "vercel dev --yes --listen 5173 & wait-on http://localhost:5173 && ./scripts/launch-chrome-beta.sh",
