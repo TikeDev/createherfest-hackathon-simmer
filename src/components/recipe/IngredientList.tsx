@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { Ingredient } from '@/types/recipe'
+import { Button } from '@/components/ui/button'
 
 type UnitMode = 'original' | 'metric' | 'volume'
 
@@ -50,18 +51,16 @@ export function IngredientList({ ingredients }: IngredientListProps) {
         {/* Unit toggle */}
         <div role="group" aria-label="Unit display mode" className="flex gap-1 text-xs">
           {(['original', 'metric', 'volume'] as UnitMode[]).map((mode) => (
-            <button
+            <Button
               key={mode}
+              type="button"
+              variant={unitMode === mode ? 'default' : 'outline'}
+              size="xs"
               onClick={() => setUnitMode(mode)}
               aria-pressed={unitMode === mode}
-              className={`px-2 py-1 rounded border transition-colors ${
-                unitMode === mode
-                  ? 'bg-sage text-white border-sage'
-                  : 'border-mist-pale text-forest/70 hover:border-sage'
-              }`}
             >
               {mode === 'original' ? 'As written' : mode === 'metric' ? 'Grams' : 'No scale'}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -73,13 +72,16 @@ export function IngredientList({ ingredients }: IngredientListProps) {
               <span>{formatUnit(ingredient, unitMode)}</span>
 
               {ingredient.substitutions && ingredient.substitutions.length > 0 && (
-                <button
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="xs"
                   onClick={() => toggleSubs(ingredient.id)}
                   aria-expanded={expandedSubs.has(ingredient.id)}
-                  className="flex-shrink-0 rounded bg-amber-100 px-2 py-0.5 text-xs text-amber-800 hover:bg-amber-200 transition-colors"
+                  className="flex-shrink-0 bg-amber-100 text-amber-800 hover:bg-amber-200"
                 >
                   {expandedSubs.has(ingredient.id) ? 'Hide subs' : 'Substitutions'}
-                </button>
+                </Button>
               )}
             </div>
 

@@ -1,4 +1,13 @@
 import type { SortField, TimeRange, Complexity, FilterState } from '@/hooks/useRecipeFilters'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 const SORT_OPTIONS: { value: SortField; label: string }[] = [
   { value: 'date-newest', label: 'Newest first' },
@@ -41,9 +50,6 @@ const COMPLEXITY_CHIP_LABELS: Record<Complexity, string> = {
   complex: 'Complex',
 }
 
-const selectClass =
-  'rounded-lg border border-mist-pale bg-white px-2 py-1.5 text-xs text-forest focus:border-sage focus:outline-none focus:ring-2 focus:ring-sage/30 dark:border-forest dark:bg-forest/30 dark:text-cream'
-
 interface RecipeToolbarProps {
   query: string
   onQueryChange: (q: string) => void
@@ -76,14 +82,14 @@ export default function RecipeToolbar({
         Search recipes
       </label>
       <div className="relative">
-        <input
+        <Input
           ref={searchRef}
           id="recipe-search"
           type="search"
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}
           placeholder="Search by title, ingredient, or source..."
-          className="w-full rounded-lg border border-mist-pale bg-white px-4 py-2 pl-9 text-sm text-forest placeholder:text-forest/40 focus:border-sage focus:outline-none focus:ring-2 focus:ring-sage/30 dark:border-forest dark:bg-forest/30 dark:text-cream dark:placeholder:text-cream/40"
+          className="pl-9"
         />
         <svg
           className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-forest/40 dark:text-cream/40"
@@ -106,30 +112,61 @@ export default function RecipeToolbar({
         )}
       </div>
 
-      {/* Sort + Filters — single row of compact selects */}
+      {/* Sort + Filters */}
       <div className="flex flex-wrap items-center gap-2">
         <label htmlFor="recipe-sort" className="sr-only">Sort by</label>
-        <select id="recipe-sort" value={sortField} onChange={(e) => onSortChange(e.target.value as SortField)} className={selectClass}>
-          {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-        </select>
+        <Select value={sortField} onValueChange={(v) => onSortChange(v as SortField)}>
+          <SelectTrigger id="recipe-sort" size="sm" className="text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {SORT_OPTIONS.map((o) => (
+              <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
         <label htmlFor="filter-time" className="sr-only">Filter by time</label>
-        <select id="filter-time" value={filters.timeRange} onChange={(e) => onFilterChange('timeRange', e.target.value as TimeRange)} className={selectClass}>
-          {TIME_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-        </select>
+        <Select value={filters.timeRange} onValueChange={(v) => onFilterChange('timeRange', v as TimeRange)}>
+          <SelectTrigger id="filter-time" size="sm" className="text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {TIME_OPTIONS.map((o) => (
+              <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
         <label htmlFor="filter-complexity" className="sr-only">Filter by complexity</label>
-        <select id="filter-complexity" value={filters.complexity} onChange={(e) => onFilterChange('complexity', e.target.value as Complexity)} className={selectClass}>
-          {COMPLEXITY_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-        </select>
+        <Select value={filters.complexity} onValueChange={(v) => onFilterChange('complexity', v as Complexity)}>
+          <SelectTrigger id="filter-complexity" size="sm" className="text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {COMPLEXITY_OPTIONS.map((o) => (
+              <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
         {availableDomains.length > 1 && (
           <>
             <label htmlFor="filter-source" className="sr-only">Filter by source</label>
-            <select id="filter-source" value={filters.sourceDomain ?? ''} onChange={(e) => onFilterChange('sourceDomain', e.target.value || null)} className={selectClass}>
-              <option value="">All sources</option>
-              {availableDomains.map((d) => <option key={d} value={d}>{d}</option>)}
-            </select>
+            <Select
+              value={filters.sourceDomain ?? ''}
+              onValueChange={(v) => onFilterChange('sourceDomain', v || null)}
+            >
+              <SelectTrigger id="filter-source" size="sm" className="text-xs">
+                <SelectValue placeholder="All sources" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">All sources</SelectItem>
+                {availableDomains.map((d) => (
+                  <SelectItem key={d} value={d}>{d}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </>
         )}
       </div>
@@ -164,7 +201,7 @@ export default function RecipeToolbar({
 
 function Chip({ label, onDismiss }: { label: string; onDismiss: () => void }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-sage/10 px-2.5 py-0.5 text-xs font-medium text-sage">
+    <Badge variant="secondary" className="gap-1 bg-sage/10 text-sage hover:bg-sage/10">
       {label}
       <button
         type="button"
@@ -174,6 +211,6 @@ function Chip({ label, onDismiss }: { label: string; onDismiss: () => void }) {
       >
         <span aria-hidden="true">&times;</span>
       </button>
-    </span>
+    </Badge>
   )
 }

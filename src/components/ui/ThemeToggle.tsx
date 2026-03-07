@@ -1,4 +1,5 @@
 import { useViewPreferences } from '@/contexts/ViewPreferencesContext'
+import { Button } from '@/components/ui/button'
 
 interface ThemeToggleProps {
   compact?: boolean
@@ -10,11 +11,17 @@ const THEME_OPTIONS = [
   { value: 'system' as const, label: 'System', icon: '\u2699' },
 ]
 
+const segmentedBtnClass = (selected: boolean) =>
+  `flex-1 rounded-lg px-2 py-1.5 text-xs font-medium motion-safe:transition-colors ${
+    selected
+      ? 'bg-sage text-white'
+      : 'bg-surface border border-mist-pale text-forest/70 hover:bg-mist-pale dark:text-cream/70 dark:border-forest'
+  }`
+
 export default function ThemeToggle({ compact = false }: ThemeToggleProps) {
   const { prefs, updatePrefs } = useViewPreferences()
 
   if (compact) {
-    // Cycle through themes on click: light -> dark -> system -> light
     const nextTheme = () => {
       const order = ['light', 'dark', 'system'] as const
       const idx = order.indexOf(prefs.theme)
@@ -24,14 +31,15 @@ export default function ThemeToggle({ compact = false }: ThemeToggleProps) {
     const current = THEME_OPTIONS.find((o) => o.value === prefs.theme)!
 
     return (
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="icon"
         onClick={nextTheme}
         aria-label={`Theme: ${current.label}. Click to change.`}
-        className="flex h-8 w-8 items-center justify-center rounded-lg border border-mist-pale bg-surface text-sm hover:bg-mist-pale focus:outline-none focus:ring-2 focus:ring-sage focus:ring-offset-2 motion-safe:transition-colors dark:border-forest"
       >
         <span aria-hidden="true">{current.icon}</span>
-      </button>
+      </Button>
     )
   }
 
@@ -62,11 +70,7 @@ export default function ThemeToggle({ compact = false }: ThemeToggleProps) {
                   group?.querySelectorAll<HTMLElement>('[role="radio"]')?.[next]?.focus()
                 }
               }}
-              className={`flex-1 rounded-lg px-2 py-1.5 text-xs font-medium motion-safe:transition-colors ${
-                selected
-                  ? 'bg-sage text-white'
-                  : 'bg-surface border border-mist-pale text-forest/70 hover:bg-mist-pale dark:text-cream/70 dark:border-forest'
-              }`}
+              className={segmentedBtnClass(selected)}
             >
               <span aria-hidden="true" className="mr-1">{opt.icon}</span>
               {opt.label}

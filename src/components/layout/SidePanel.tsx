@@ -4,6 +4,9 @@ import { useViewPreferences, FONT_SIZE_MIN, FONT_SIZE_MAX } from '@/contexts/Vie
 import { getAllRecipes } from '@/storage/recipes'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import { handleRadioKeyDown } from '@/utils/a11y'
+import { Button } from '@/components/ui/button'
+import { Switch } from '@/components/ui/switch'
+import { Separator } from '@/components/ui/separator'
 
 interface SidePanelProps {
   isOpen: boolean
@@ -28,6 +31,13 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     isActive
       ? 'bg-sage/10 text-sage dark:text-sage'
       : 'text-forest/70 hover:bg-surface hover:text-forest dark:text-cream/70 dark:hover:bg-forest/50 dark:hover:text-cream'
+  }`
+
+const segmentedBtnClass = (selected: boolean) =>
+  `flex-1 rounded-lg px-2 py-1.5 text-xs font-medium motion-safe:transition-colors ${
+    selected
+      ? 'bg-sage text-white'
+      : 'bg-surface border border-mist-pale text-forest/70 hover:bg-mist-pale dark:text-cream/70 dark:border-forest'
   }`
 
 export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps) {
@@ -96,15 +106,16 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
       <div className={`flex items-center justify-between pt-5 pb-4 ${prefs.panelSide === 'left' ? 'pl-[4.5rem] pr-4' : 'px-4'}`}>
         <span id="side-panel-title" className="text-xl font-headline text-sage">Simmer</span>
         {isMobile && (
-          <button
+          <Button
             ref={closeButtonRef}
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={onClose}
             aria-label="Close menu"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-forest/50 hover:bg-surface hover:text-forest focus:outline-none focus:ring-2 focus:ring-sage dark:text-cream/50 dark:hover:bg-forest/50 dark:hover:text-cream"
           >
             <span aria-hidden="true" className="text-lg">&times;</span>
-          </button>
+          </Button>
         )}
       </div>
 
@@ -131,8 +142,7 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
         </NavLink>
       </nav>
 
-      {/* Divider */}
-      <hr className="mx-4 my-4 border-mist-pale dark:border-forest" />
+      <Separator className="mx-4 my-4" />
 
       {/* Display Settings */}
       <div className="px-4 space-y-5">
@@ -144,27 +154,29 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
         <div className="space-y-2" role="group" aria-labelledby="font-size-label">
           <span id="font-size-label" className="text-xs font-semibold text-forest/80 dark:text-cream/80">Font Size</span>
           <div className="flex items-center gap-2">
-            <button
+            <Button
               type="button"
+              variant="outline"
+              size="icon"
               onClick={() => updatePrefs({ fontSize: prefs.fontSize - 1 })}
               disabled={prefs.fontSize <= FONT_SIZE_MIN}
               aria-label="Decrease font size"
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-mist-pale text-sm font-bold text-forest hover:bg-surface focus:outline-none focus:ring-2 focus:ring-sage disabled:opacity-30 disabled:cursor-not-allowed dark:border-forest dark:hover:bg-forest/50"
             >
               &minus;
-            </button>
+            </Button>
             <span className="min-w-[3rem] text-center text-sm font-medium text-forest" aria-live="polite">
               {prefs.fontSize}px
             </span>
-            <button
+            <Button
               type="button"
+              variant="outline"
+              size="icon"
               onClick={() => updatePrefs({ fontSize: prefs.fontSize + 1 })}
               disabled={prefs.fontSize >= FONT_SIZE_MAX}
               aria-label="Increase font size"
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-mist-pale text-sm font-bold text-forest hover:bg-surface focus:outline-none focus:ring-2 focus:ring-sage disabled:opacity-30 disabled:cursor-not-allowed dark:border-forest dark:hover:bg-forest/50"
             >
               +
-            </button>
+            </Button>
           </div>
           {prefs.fontSize !== 16 && (
             <button
@@ -192,11 +204,7 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
                   tabIndex={selected ? 0 : -1}
                   onClick={() => updatePrefs({ fontFamily: opt.value })}
                   onKeyDown={(e) => handleRadioKeyDown(e, FONT_FAMILY_OPTIONS.map(o => o.value), prefs.fontFamily, (v) => updatePrefs({ fontFamily: v }))}
-                  className={`flex-1 rounded-lg px-2 py-1.5 text-xs font-medium motion-safe:transition-colors ${
-                    selected
-                      ? 'bg-sage text-white'
-                      : 'bg-surface border border-mist-pale text-forest/70 hover:bg-mist-pale dark:text-cream/70 dark:border-forest'
-                  }`}
+                  className={segmentedBtnClass(selected)}
                 >
                   {opt.label}
                 </button>
@@ -211,23 +219,11 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
         {/* Contrast */}
         <div className="flex items-center justify-between">
           <span id="high-contrast-label" className="text-xs font-semibold text-forest/80 dark:text-cream/80">High Contrast</span>
-          <button
-            type="button"
-            role="switch"
-            aria-checked={prefs.contrastMode === 'high'}
+          <Switch
+            checked={prefs.contrastMode === 'high'}
+            onCheckedChange={(checked) => updatePrefs({ contrastMode: checked ? 'high' : 'default' })}
             aria-labelledby="high-contrast-label"
-            onClick={() => updatePrefs({ contrastMode: prefs.contrastMode === 'high' ? 'default' : 'high' })}
-            className={`relative h-6 w-11 rounded-full motion-safe:transition-colors focus:outline-none focus:ring-2 focus:ring-sage focus:ring-offset-2 ${
-              prefs.contrastMode === 'high' ? 'bg-sage' : 'bg-mist-pale dark:bg-forest'
-            }`}
-          >
-            <span
-              aria-hidden="true"
-              className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-sm motion-safe:transition-transform ${
-                prefs.contrastMode === 'high' ? 'translate-x-5' : ''
-              }`}
-            />
-          </button>
+          />
         </div>
 
         {/* Color Blind Mode */}
@@ -245,11 +241,7 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
                   tabIndex={selected ? 0 : -1}
                   onClick={() => updatePrefs({ colorBlindMode: opt.value })}
                   onKeyDown={(e) => handleRadioKeyDown(e, COLORBLIND_OPTIONS.map(o => o.value), prefs.colorBlindMode, (v) => updatePrefs({ colorBlindMode: v }))}
-                  className={`flex-1 rounded-lg px-2 py-1.5 text-xs font-medium motion-safe:transition-colors ${
-                    selected
-                      ? 'bg-sage text-white'
-                      : 'bg-surface border border-mist-pale text-forest/70 hover:bg-mist-pale dark:text-cream/70 dark:border-forest'
-                  }`}
+                  className={segmentedBtnClass(selected)}
                 >
                   {opt.label}
                 </button>
@@ -259,8 +251,7 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
         </fieldset>
       </div>
 
-      {/* Divider */}
-      <hr className="mx-4 my-4 border-mist-pale dark:border-forest" />
+      <Separator className="mx-4 my-4" />
 
       {/* Panel Position */}
       <fieldset className="px-4 space-y-2" role="radiogroup">
@@ -277,11 +268,7 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
                 tabIndex={selected ? 0 : -1}
                 onClick={() => updatePrefs({ panelSide: side })}
                 onKeyDown={(e) => handleRadioKeyDown(e, ['left', 'right'] as const, prefs.panelSide, (v) => updatePrefs({ panelSide: v }))}
-                className={`flex-1 rounded-lg px-3 py-1.5 text-xs font-medium capitalize motion-safe:transition-colors ${
-                  selected
-                    ? 'bg-sage text-white'
-                    : 'bg-surface border border-mist-pale text-forest/70 hover:bg-mist-pale dark:text-cream/70 dark:border-forest'
-                }`}
+                className={`${segmentedBtnClass(selected)} capitalize`}
               >
                 {side}
               </button>

@@ -95,7 +95,7 @@
   }
   html[data-theme="dark"] {
     /* shadcn semantic tokens — dark overrides using Simmer dark palette */
-    --background: var(--color-cream);
+    --background: var(--color-cream);   /* already remapped by dark block below */
     --foreground: var(--color-forest);
     --card: var(--color-surface);
     --card-foreground: var(--color-forest);
