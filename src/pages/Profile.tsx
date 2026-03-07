@@ -44,7 +44,7 @@ function ChipGroup({
 }) {
   return (
     <fieldset className="space-y-2">
-      <legend className="text-sm font-semibold text-forest dark:text-cream">{legend}</legend>
+      <legend className="text-sm font-semibold text-forest dark:text-cream-text">{legend}</legend>
       <div className="flex flex-wrap gap-2">
         {options.map((opt) => {
           const isSelected = selected.includes(opt);
@@ -57,7 +57,7 @@ function ChipGroup({
               className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-sage focus:ring-offset-2 ${
                 isSelected
                   ? "bg-sage text-white"
-                  : "border border-mist-pale bg-surface text-forest/70 hover:border-mist hover:text-forest dark:text-cream/70 dark:border-forest dark:hover:border-mist dark:hover:text-cream"
+                  : "border border-mist-pale bg-surface text-forest/70 hover:border-mist hover:text-forest dark:text-cream-text/70 dark:border-forest dark:hover:border-mist dark:hover:text-cream-text"
               }`}
             >
               {opt}
@@ -85,7 +85,7 @@ function RadioPillGroup<T extends string>({
 }) {
   return (
     <fieldset className="space-y-2" role="radiogroup">
-      <legend className="text-sm font-semibold text-forest dark:text-cream">{legend}</legend>
+      <legend className="text-sm font-semibold text-forest dark:text-cream-text">{legend}</legend>
       <div className="flex flex-wrap gap-1">
         {options.map((opt) => {
           const isSelected = selected === opt;
@@ -101,7 +101,7 @@ function RadioPillGroup<T extends string>({
               className={`rounded-lg px-3 py-1.5 text-xs font-medium capitalize transition-colors focus:outline-none focus:ring-2 focus:ring-sage focus:ring-offset-2 ${
                 isSelected
                   ? "bg-sage text-white"
-                  : "border border-mist-pale bg-surface text-forest/70 hover:bg-mist-pale dark:text-cream/70 dark:border-forest"
+                  : "border border-mist-pale bg-surface text-forest/70 hover:bg-mist-pale dark:text-cream-text/70 dark:border-forest"
               }`}
             >
               {labels ? labels[opt] : opt}
@@ -146,7 +146,7 @@ function FreeTextChips({
 
   return (
     <fieldset className="space-y-2">
-      <legend className="text-sm font-semibold text-forest dark:text-cream">{legend}</legend>
+      <legend className="text-sm font-semibold text-forest dark:text-cream-text">{legend}</legend>
       <div className="flex flex-wrap gap-2">
         {values.map((val) => (
           <span
@@ -176,7 +176,7 @@ function FreeTextChips({
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="Type an ingredient and press Enter"
-        className="w-full rounded-lg border border-mist-pale bg-surface px-3 py-2 text-sm text-forest placeholder:text-forest/40 focus:border-sage focus:outline-none focus:ring-2 focus:ring-sage dark:text-cream dark:border-forest dark:placeholder:text-cream/40 dark:focus:border-sage"
+        className="w-full rounded-lg border border-mist-pale bg-surface px-3 py-2 text-sm text-forest placeholder:text-forest/40 focus:border-sage focus:outline-none focus:ring-2 focus:ring-sage dark:text-cream-text dark:border-forest dark:placeholder:text-cream-text/40 dark:focus:border-sage"
       />
     </fieldset>
   );
@@ -192,22 +192,32 @@ function Section({
   defaultOpen?: boolean;
   children: React.ReactNode;
 }) {
+  const [isOpen, setIsOpen] = useState(defaultOpen ?? false);
+
   return (
-    <details
-      open={defaultOpen}
-      className="group rounded-xl border border-mist-pale bg-surface dark:border-forest"
-    >
-      <summary className="flex cursor-pointer items-center justify-between px-5 py-4 text-forest focus:outline-none focus:ring-2 focus:ring-sage focus:ring-offset-2 rounded-xl dark:text-cream">
+    <div className="rounded-xl border border-mist-pale bg-surface dark:border-forest">
+      <button
+        type="button"
+        onClick={() => setIsOpen((o) => !o)}
+        aria-expanded={isOpen}
+        className="flex w-full cursor-pointer items-center justify-between px-5 py-4 text-forest focus:outline-none focus:ring-2 focus:ring-sage focus:ring-offset-2 rounded-xl dark:text-cream-text"
+      >
         <h2 className="text-base font-headline">{title}</h2>
         <span
           aria-hidden="true"
-          className="text-forest/40 transition-transform group-open:rotate-180 dark:text-cream/40"
+          className={`text-forest/40 transition-transform duration-300 dark:text-cream-text/40 ${isOpen ? "rotate-180" : ""}`}
         >
           &#x25BE;
         </span>
-      </summary>
-      <div className="space-y-6 px-5 pb-5">{children}</div>
-    </details>
+      </button>
+      <div
+        className={`grid transition-[grid-template-rows] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
+      >
+        <div className="overflow-hidden">
+          <div className="space-y-6 px-5 pb-5 pt-4">{children}</div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -220,7 +230,7 @@ export default function Profile() {
   if (loading || !profile) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-8">
-        <p className="text-sm text-forest/60 dark:text-cream/60" role="status">
+        <p className="text-sm text-forest/60 dark:text-cream-text/60" role="status">
           Loading profile...
         </p>
       </div>
@@ -267,26 +277,26 @@ export default function Profile() {
     <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-headline text-forest dark:text-cream">My Profile</h1>
+        <h1 className="text-2xl font-headline text-forest dark:text-cream-text">My Profile</h1>
         <div className="flex items-center gap-3">
           <span
             role="status"
             aria-live="polite"
-            className="text-xs text-forest/50 dark:text-cream/50"
+            className="text-xs text-forest/50 dark:text-cream-text/50"
           >
             {saveStatus === "saving" && "Saving..."}
             {saveStatus === "saved" && "Saved"}
           </span>
           <Link
             to="/recipes"
-            className="rounded-lg bg-surface border border-mist-pale px-3 py-1.5 text-xs font-medium text-forest/70 hover:border-mist hover:text-forest transition-colors focus:outline-none focus:ring-2 focus:ring-sage focus:ring-offset-2 dark:text-cream/70 dark:border-forest dark:hover:text-cream"
+            className="rounded-lg bg-surface border border-mist-pale px-3 py-1.5 text-xs font-medium text-forest/70 hover:border-mist hover:text-forest transition-colors focus:outline-none focus:ring-2 focus:ring-sage focus:ring-offset-2 dark:text-cream-text/70 dark:border-forest dark:hover:text-cream-text"
           >
             Back to recipes
           </Link>
         </div>
       </div>
 
-      <p className="text-sm text-forest/60 dark:text-cream/60">
+      <p className="text-sm text-forest/60 dark:text-cream-text/60">
         Your profile helps Simmer find recipes that work for your body and kitchen. Changes save
         automatically.
       </p>
@@ -488,11 +498,11 @@ export default function Profile() {
       <Section title="Time & Budget">
         {/* Time preference */}
         <fieldset className="space-y-2">
-          <legend className="text-sm font-semibold text-forest dark:text-cream">
+          <legend className="text-sm font-semibold text-forest dark:text-cream-text">
             Max cooking time
           </legend>
           <div className="flex items-center gap-3">
-            <label className="flex items-center gap-2 text-xs text-forest/70 dark:text-cream/70">
+            <label className="flex items-center gap-2 text-xs text-forest/70 dark:text-cream-text/70">
               <input
                 type="checkbox"
                 checked={profile.timePreferenceMinutes == null}
@@ -522,7 +532,7 @@ export default function Profile() {
                 aria-valuetext={`${profile.timePreferenceMinutes} minutes`}
                 className="w-full accent-sage focus:outline-none focus:ring-2 focus:ring-sage focus:ring-offset-2 rounded-lg"
               />
-              <div className="flex justify-between text-xs text-forest/50 dark:text-cream/50">
+              <div className="flex justify-between text-xs text-forest/50 dark:text-cream-text/50">
                 <span>15 min</span>
                 <span className="font-semibold text-sage">{profile.timePreferenceMinutes} min</span>
                 <span>120 min</span>
