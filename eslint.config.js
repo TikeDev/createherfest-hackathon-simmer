@@ -18,6 +18,17 @@ export default tseslint.config(
     },
   },
   {
+    // Test files: disable type-aware rules that require a test-aware tsconfig
+    files: ['**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts', '**/*.spec.tsx'],
+    rules: {
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+    },
+  },
+  {
     ignores: ['dist/', 'node_modules/', '*.config.js', '*.config.ts', 'vite.config.ts'],
   }
 );

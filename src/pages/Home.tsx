@@ -1,39 +1,52 @@
-import { useEffect, useState, useRef, useCallback } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { getAllRecipes } from '@/storage/recipes'
-import { useRecipeFilters } from '@/hooks/useRecipeFilters'
-import RecipeToolbar from '@/components/recipes/RecipeToolbar'
-import RecipeCard from '@/components/recipes/RecipeCard'
-import { Icon } from '@/components/ui/icon'
-import { Leaf, Sun, Zap } from 'lucide-react'
-import type { RecipeJSON } from '@/types/recipe'
-import type { EnergyLevel } from './Landing'
-import type { LucideIcon } from 'lucide-react'
+import { useEffect, useState, useRef, useCallback } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { getAllRecipes } from "@/storage/recipes";
+import { useRecipeFilters } from "@/hooks/useRecipeFilters";
+import { useProfile } from "@/hooks/useProfile";
+import { useSmartSuggestions } from "@/hooks/useSmartSuggestions";
+import RecipeToolbar from "@/components/recipes/RecipeToolbar";
+import RecipeCard from "@/components/recipes/RecipeCard";
+import { Icon } from "@/components/ui/icon";
+import { Leaf, Sun, Zap } from "lucide-react";
+import type { RecipeJSON } from "@/types/recipe";
+import type { EnergyLevel } from "./Landing";
+import type { LucideIcon } from "lucide-react";
 
 const ENERGY_CONFIG: Record<EnergyLevel, { icon: LucideIcon; label: string; color: string }> = {
-  low:    { icon: Leaf, label: 'Low energy',   color: 'text-sage' },
-  medium: { icon: Sun,  label: 'Medium energy', color: 'text-amber-500' },
-  high:   { icon: Zap,  label: 'Feeling good',  color: 'text-orange-500' },
-}
+  low: { icon: Leaf, label: "Low energy", color: "text-sage" },
+  medium: { icon: Sun, label: "Medium energy", color: "text-amber-500" },
+  high: { icon: Zap, label: "Feeling good", color: "text-orange-500" },
+};
 
 export default function Home() {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const session = location.state as { energy?: EnergyLevel; note?: string } | null
-  const hasSession = !!(session?.energy || session?.note)
+  const location = useLocation();
+  const navigate = useNavigate();
+  const session = location.state as { energy?: EnergyLevel; note?: string } | null;
+  const hasSession = !!(session?.energy || session?.note);
 
-  const [recipes, setRecipes] = useState<RecipeJSON[]>([])
-  const [loading, setLoading] = useState(true)
+  const [recipes, setRecipes] = useState<RecipeJSON[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showAll, setShowAll] = useState(false);
 
-  const searchRef = useRef<HTMLInputElement>(null)
-  const liveRef = useRef<HTMLDivElement>(null)
-  const announceTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const { profile, loading: profileLoading } = useProfile();
+
+  const searchRef = useRef<HTMLInputElement>(null);
+  const liveRef = useRef<HTMLDivElement>(null);
+  const announceTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
-    getAllRecipes()
+    void getAllRecipes()
       .then((all) => setRecipes(all))
-      .finally(() => setLoading(false))
-  }, [])
+      .finally(() => setLoading(false));
+  }, []);
+
+  const { suggestions, loading: suggestionsLoading } = useSmartSuggestions(
+    hasSession ? session?.energy : null,
+    hasSession ? session?.note : null,
+    recipes,
+    profile,
+    profileLoading
+  );
 
   const {
     query,
@@ -48,44 +61,41 @@ export default function Home() {
     totalCount,
     availableDomains,
     hasActiveFilters,
-  } = useRecipeFilters(recipes)
+  } = useRecipeFilters(recipes);
 
   // Debounced live region announcement
-  const announce = useCallback(
-    (text: string) => {
-      clearTimeout(announceTimer.current)
-      announceTimer.current = setTimeout(() => {
-        if (liveRef.current) liveRef.current.textContent = text
-      }, 300)
-    },
-    [],
-  )
+  const announce = useCallback((text: string) => {
+    clearTimeout(announceTimer.current);
+    announceTimer.current = setTimeout(() => {
+      if (liveRef.current) liveRef.current.textContent = text;
+    }, 300);
+  }, []);
 
   useEffect(() => {
-    if (loading) return
-    if (totalCount === 0) return
+    if (loading) return;
+    if (totalCount === 0) return;
     const text =
       resultCount === totalCount
         ? `${totalCount} recipes`
         : resultCount === 0
-          ? 'No recipes match your search'
-          : `Showing ${resultCount} of ${totalCount} recipes`
-    announce(text)
-  }, [resultCount, totalCount, loading, announce])
+          ? "No recipes match your search"
+          : `Showing ${resultCount} of ${totalCount} recipes`;
+    announce(text);
+  }, [resultCount, totalCount, loading, announce]);
 
   // Cleanup timer
-  useEffect(() => () => clearTimeout(announceTimer.current), [])
+  useEffect(() => () => clearTimeout(announceTimer.current), []);
 
   const handleResetFilters = () => {
-    resetFilters()
-    searchRef.current?.focus()
-  }
+    resetFilters();
+    searchRef.current?.focus();
+  };
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-headline text-forest dark:text-cream-text">
-          {hasSession ? 'Here\'s what we found.' : 'My Recipes'}
+          {hasSession ? "Here's what we found." : "My Recipes"}
         </h1>
         <Link
           to="/extract"
@@ -101,23 +111,82 @@ export default function Home() {
           <div className="flex flex-wrap items-center gap-2">
             {session?.energy && (
               <span className="rounded-full bg-surface border border-mist text-sage text-xs font-semibold px-3 py-1 dark:border-forest">
-                <Icon icon={ENERGY_CONFIG[session.energy].icon} size="sm" decorative className={`inline mr-1 ${ENERGY_CONFIG[session.energy].color}`} />
+                <Icon
+                  icon={ENERGY_CONFIG[session.energy].icon}
+                  size="sm"
+                  decorative
+                  className={`inline mr-1 ${ENERGY_CONFIG[session.energy].color}`}
+                />
                 {ENERGY_CONFIG[session.energy].label}
               </span>
             )}
             {session?.note && (
-              <span className="text-sm text-forest/70 italic dark:text-cream-text/70">"{session.note}"</span>
+              <span className="text-sm text-forest/70 italic dark:text-cream-text/70">
+                "{session.note}"
+              </span>
             )}
           </div>
           <button
             type="button"
-            onClick={() => navigate('/')}
+            onClick={() => {
+              void navigate("/");
+            }}
             className="text-xs text-forest/50 hover:text-sage transition-colors dark:text-cream-text/50"
           >
             ← Start over
           </button>
         </div>
       )}
+
+      {/* ── Suggestions section (session only) ───────────────── */}
+      {hasSession && (
+        <section aria-label="Recipe suggestions">
+          {suggestionsLoading && (
+            <p
+              className="text-sm text-forest/60 dark:text-cream-text/60 animate-pulse"
+              role="status"
+            >
+              Finding your best matches…
+            </p>
+          )}
+
+          {!suggestionsLoading && suggestions.length > 0 && (
+            <ul className="space-y-3">
+              {suggestions.map((s) => (
+                <RecipeCard key={s.recipe.id} recipe={s.recipe} reason={s.reason} />
+              ))}
+            </ul>
+          )}
+
+          {!suggestionsLoading && suggestions.length === 0 && !loading && totalCount > 0 && (
+            <p className="text-sm text-forest/60 dark:text-cream-text/60">
+              No recipes matched your energy level today.{" "}
+              <button
+                type="button"
+                onClick={() => setShowAll(true)}
+                className="text-sage underline hover:text-sage-dark"
+              >
+                Browse all recipes.
+              </button>
+            </p>
+          )}
+
+          {/* Toggle: show / hide full recipe list */}
+          {!loading && totalCount > 0 && (
+            <button
+              type="button"
+              onClick={() => setShowAll((v) => !v)}
+              className="mt-4 text-sm text-forest/50 hover:text-sage dark:text-cream-text/50 transition-colors"
+              aria-expanded={showAll}
+            >
+              {showAll ? "↑ Hide all recipes" : `↓ Show all ${totalCount} recipes`}
+            </button>
+          )}
+        </section>
+      )}
+
+      {/* ── Full recipe list ──────────────────────────────────── */}
+      {/* Always visible when there's no session; toggled when there is one */}
 
       {loading && (
         <p className="text-sm text-forest/60 dark:text-cream-text/60" role="status">
@@ -137,7 +206,7 @@ export default function Home() {
         </div>
       )}
 
-      {!loading && totalCount > 0 && (
+      {!loading && totalCount > 0 && (!hasSession || showAll) && (
         <>
           {/* Search, sort, filter toolbar */}
           <RecipeToolbar
@@ -154,7 +223,13 @@ export default function Home() {
           />
 
           {/* Live region for screen reader announcements */}
-          <div ref={liveRef} role="status" aria-live="polite" aria-atomic="true" className="sr-only" />
+          <div
+            ref={liveRef}
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            className="sr-only"
+          />
 
           {/* Visible results count */}
           {resultCount !== totalCount && (
@@ -187,5 +262,5 @@ export default function Home() {
         </>
       )}
     </div>
-  )
+  );
 }
