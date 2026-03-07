@@ -21,7 +21,7 @@ function makeRecipe(overrides: {
     sourceDomain: "test",
     extractedAt: "2026-01-01T00:00:00.000Z",
     preamble: { raw: "", tips: [], substitutions: [], techniqueNotes: [] },
-    ingredients: overrides.ingredients ?? [],
+    ingredients: (overrides.ingredients ?? []) as import("../types/recipe").Ingredient[],
     steps: overrides.steps ?? [],
     metadata: {
       cognitiveScore: overrides.cognitiveScore,
@@ -90,7 +90,6 @@ describe("energy level filtering", () => {
 
   it("excludes recipes with no cognitiveScore set", () => {
     const unscoredRecipe = makeRecipe({ id: "unscored", title: "Mystery Dish", cognitiveScore: 1 });
-    // @ts-expect-error — simulating missing score from older data
     unscoredRecipe.metadata.cognitiveScore = undefined;
     const results = suggestRecipes("", 3, [unscoredRecipe, easyRecipe]);
     expect(results.map((r) => r.recipe.id)).toEqual(["easy"]);
@@ -353,7 +352,6 @@ describe("time preference soft scoring", () => {
   });
 
   it("still includes over-limit recipes (soft penalty, not hard filter)", () => {
-    const _profile = makeProfile({ timePreferenceMinutes: 10 });
     const results = suggestRecipes("", 1, [slowRecipe]);
     expect(results).toHaveLength(1);
   });
