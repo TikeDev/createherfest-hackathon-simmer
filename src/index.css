@@ -42,6 +42,26 @@
     --color-forest: #2D3B35;
     --color-cream: #FAF4EF;
     --color-surface: #EEF5F0;
+    /* shadcn semantic tokens — mapped to Simmer's palette */
+    --background: var(--color-cream);
+    --foreground: var(--color-forest);
+    --card: var(--color-surface);
+    --card-foreground: var(--color-forest);
+    --popover: var(--color-cream);
+    --popover-foreground: var(--color-forest);
+    --primary: var(--color-sage);
+    --primary-foreground: #ffffff;
+    --secondary: var(--color-surface);
+    --secondary-foreground: var(--color-forest);
+    --muted: var(--color-surface);
+    --muted-foreground: color-mix(in srgb, var(--color-forest) 60%, transparent);
+    --accent: var(--color-mist-pale);
+    --accent-foreground: var(--color-forest);
+    --destructive: #dc2626;
+    --border: var(--color-mist-pale);
+    --input: var(--color-mist-pale);
+    --ring: var(--color-sage);
+    --radius: 0.5rem;
   }
 
   html[data-colorblind="red-green"] {
@@ -72,5 +92,30 @@
       transition-delay: 0ms !important;
       animation-delay: 0ms !important;
     }
+  }
+  html[data-theme="dark"] {
+    /* shadcn semantic tokens — dark overrides using Simmer dark palette */
+    --background: var(--color-cream);
+    --foreground: var(--color-forest);
+    --card: var(--color-surface);
+    --card-foreground: var(--color-forest);
+    --popover: var(--color-cream);
+    --popover-foreground: var(--color-forest);
+    --primary: var(--color-sage);
+    --primary-foreground: #ffffff;
+    --secondary: var(--color-surface);
+    --secondary-foreground: var(--color-forest);
+    --muted: var(--color-surface);
+    --muted-foreground: color-mix(in srgb, var(--color-forest) 70%, transparent);
+    --accent: #1e3a30;
+    --accent-foreground: var(--color-forest);
+    --destructive: #f87171;
+    --border: color-mix(in srgb, var(--color-forest) 40%, transparent);
+    --input: color-mix(in srgb, var(--color-forest) 40%, transparent);
+    --ring: var(--color-sage);
+  }
+  * {
+    border-color: var(--border);
+    outline-color: var(--ring);
   }
 }

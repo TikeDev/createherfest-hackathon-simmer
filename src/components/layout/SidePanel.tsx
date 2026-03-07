@@ -178,9 +178,9 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
         </div>
 
         {/* Font Family */}
-        <fieldset className="space-y-2">
+        <fieldset className="space-y-2" role="radiogroup">
           <legend className="text-xs font-semibold text-forest/80 dark:text-cream/80">Font Family</legend>
-          <div className="flex gap-1" role="radiogroup">
+          <div className="flex gap-1">
             {FONT_FAMILY_OPTIONS.map((opt) => {
               const selected = prefs.fontFamily === opt.value
               return (
@@ -231,9 +231,9 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
         </div>
 
         {/* Color Blind Mode */}
-        <fieldset className="space-y-2">
+        <fieldset className="space-y-2" role="radiogroup">
           <legend className="text-xs font-semibold text-forest/80 dark:text-cream/80">Color Blind Mode</legend>
-          <div className="flex gap-1" role="radiogroup">
+          <div className="flex gap-1">
             {COLORBLIND_OPTIONS.map((opt) => {
               const selected = prefs.colorBlindMode === opt.value
               return (
@@ -263,9 +263,9 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
       <hr className="mx-4 my-4 border-mist-pale dark:border-forest" />
 
       {/* Panel Position */}
-      <fieldset className="px-4 space-y-2">
+      <fieldset className="px-4 space-y-2" role="radiogroup">
         <legend className="text-xs font-semibold text-forest/80 dark:text-cream/80">Panel Position</legend>
-        <div className="flex gap-1" role="radiogroup">
+        <div className="flex gap-1">
           {(['left', 'right'] as const).map((side) => {
             const selected = prefs.panelSide === side
             return (

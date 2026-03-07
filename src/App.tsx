@@ -5,6 +5,7 @@ import Home from './pages/Home'
 import CookingModeWrapper from './pages/CookingMode'
 import Extract from './pages/Extract'
 import RecipeDetail from './pages/RecipeDetail'
+import Profile from './pages/Profile'
 import AppLayout from './components/layout/AppLayout'
 import { OfflineBanner } from './components/ui/OfflineBanner'
 
@@ -20,6 +21,7 @@ export default function App() {
             <Route path="/recipes" element={<Home />} />
             <Route path="/extract" element={<Extract />} />
             <Route path="/recipe/:id" element={<RecipeDetail />} />
+            <Route path="/profile" element={<Profile />} />
           </Route>
         </Routes>
       </BrowserRouter>

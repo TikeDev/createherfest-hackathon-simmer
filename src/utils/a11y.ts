@@ -12,6 +12,8 @@ export function handleRadioKeyDown<T>(
   let next: number | null = null
   if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (idx + 1) % options.length
   if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (idx - 1 + options.length) % options.length
+  if (e.key === 'Home') next = 0
+  if (e.key === 'End') next = options.length - 1
   if (next !== null) {
     e.preventDefault()
     onChange(options[next])
