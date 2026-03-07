@@ -1,0 +1,17 @@
+# Goose Project Configuration
+# This file configures Goose extensions for this project
+# Teammates will automatically have these extensions available
+
+extensions:
+  chrome-devtools:
+    enabled: true
+    type: stdio
+    name: Chrome DevTools
+    description: Chrome DevTools MCP server for browser automation and debugging
+    cmd: npx
+    args:
+      - chrome-devtools-mcp@latest
+      - --browser-url=http://127.0.0.1:9222
+    envs: {}
+    env_keys: []
+    timeout: 300
