@@ -2,14 +2,14 @@
 
 ## Table of Contents
 - [♿ Accessibility Agents (manual invocation)](#-accessibility-agents-manual-invocation)
-  - [How to use accessibility agents](#how-to-use-accessibility-agents)
-  - [Tips from using the agents](#tips-from-using-the-agents)
-  - [Re-enabling automatic hooks (optional)](#re-enabling-automatic-hooks-optional)
+- [How to use accessibility agents](#how-to-use-accessibility-agents)
+- [Tips from using the agents](#tips-from-using-the-agents)
+- [Re-enabling automatic hooks (optional)](#re-enabling-automatic-hooks-optional)
 - [📄 Updating Documentation](#-updating-documentation)
 - [🎨 Claude Code Figma Plugin (MCP + Skills)](#-claude-code-figma-plugin-mcp--skills)
 - [🔍 Chrome DevTools MCP](#-chrome-devtools-mcp)
-  - [Option A: Chrome Beta (Mac/Windows)](#option-a-chrome-beta-macwindows)
-  - [Option B: Brave on Windows (untested)](#option-b-brave-on-windows-untested)
+- [Option A: Chrome Beta (Mac/Windows)](#option-a-chrome-beta-macwindows)
+- [Option B: Brave on Windows (untested)](#option-b-brave-on-windows-untested)
 
 ---
 
@@ -151,16 +151,16 @@ Choose the option that matches your browser.
 #### Project-level setup
 
 1. **Copy the MCP config template:**
-   ```bash
-   cp .mcp.json.example .mcp.json
-   ```
-   `.mcp.json` is gitignored — no secrets, just a port number. The template already has `--browser-url=http://127.0.0.1:9222` configured.
+```bash
+cp .mcp.json.example .mcp.json
+```
+`.mcp.json` is gitignored — no secrets, just a port number. The template already has `--browser-url=http://127.0.0.1:9222` configured.
 
 2. **Start Vite + Chrome Beta with remote debugging:**
-   ```bash
-   pnpm dev:browser
-   ```
-   This starts the dev server, waits for it to be ready, then launches Chrome Beta with `--remote-debugging-port=9222`.
+```bash
+pnpm dev:browser
+```
+This starts the dev server, waits for it to be ready, then launches Chrome Beta with `--remote-debugging-port=9222`.
 
 3. **Restart Claude Code** so it picks up `.mcp.json`.
 
@@ -257,3 +257,228 @@ With `pnpm dev:browser:brave` running, ask Claude: `"Do you see the running app?
 | `wait-on` times out before Brave launches | Vite took too long to start | Run `pnpm dev` and `scripts\launch-brave.bat` in two separate terminals |
 | Both `brave-devtools` and `chrome-devtools` MCPs are installed | Different server names registered | They can coexist — the `.mcp.json` server name must match what was registered via `claude mcp add` |
 
+---
+
+## 🔍 Linting & Code Quality Setup
+
+### Quick Start
+
+After cloning the repo, the linting setup is ready to use:
+
+```bash
+# The prepare script runs automatically after pnpm install
+# But you can run it manually to verify:
+pnpm prepare
+```
+
+### What Gets Set Up Automatically
+
+After running `pnpm install`, you'll have:
+
+#### 🔍 **Auto-linting on Every Commit**
+
+When you `git commit`, these linters run automatically:
+
+- **TypeScript/TSX files** → ESLint checks and fixes → Prettier formats
+- **CSS files** → Stylelint checks and fixes → Prettier formats
+- **Python files** → Ruff checks and fixes → Ruff formats
+
+**Your commit will be blocked if there are unfixable errors** - this prevents bugs from entering the codebase!
+
+The pre-commit hook only lints **files you're actually committing**, so it's fast.
+
+#### 📝 **Available Lint Commands**
+
+Run these manually anytime:
+
+```bash
+# Check for issues
+pnpm lint           # Lint TS/TSX and CSS
+pnpm lint:py        # Lint Python files
+
+# Auto-fix issues
+pnpm lint:fix       # Fix TS/TSX and CSS issues
+pnpm lint:py:fix    # Fix Python issues
+```
+
+### VS Code Setup (Highly Recommended)
+
+#### Install Recommended Extensions
+
+1. Open VS Code in the project directory
+2. Open the command palette (`Cmd+Shift+P` or `Ctrl+Shift+P`)
+3. Run: `Extensions: Show Recommended Extensions`
+4. Install all 4 extensions:
+   - **ESLint** (`dbaeumer.vscode-eslint`)
+   - **Prettier** (`esbenp.prettier-vscode`)
+   - **Stylelint** (`stylelint.vscode-stylelint`)
+   - **Ruff** (`charliermarsh.ruff`)
+
+#### What You Get with Extensions
+
+✅ **Real-time error highlighting** as you type  
+✅ **Auto-fix on save** - files are formatted and fixed automatically  
+✅ **Consistent formatting** across the entire team  
+✅ **Fewer surprises** at commit time
+
+Settings are already configured in `.vscode/settings.json`.
+
+### Understanding the Linting System
+
+#### How It Works
+
+This project uses a multi-layered linting approach:
+
+1. **Pre-commit Hooks (Husky + lint-staged)**
+   - Runs automatically when you `git commit`
+   - Only lints files you're committing (fast!)
+   - Auto-fixes issues when possible
+   - Blocks commit if unfixable errors exist
+
+2. **ESLint (TypeScript/TSX)**
+   - Catches syntax errors and type safety issues
+   - Prevents unused variables
+   - Detects unhandled promises
+   - Enforces best practices
+
+3. **Stylelint (CSS)**
+   - Validates CSS syntax
+   - Works with Tailwind CSS directives
+   - Enforces consistent style
+
+4. **Ruff (Python)**
+   - Super fast Python linter (Rust-based)
+   - Auto-formats code
+   - Organizes imports
+   - Enforces PEP 8 style
+
+5. **Prettier (Code Formatting)**
+   - Consistent code formatting
+   - Auto-formats on save in VS Code
+
+#### Configuration Files
+
+| File                      | Purpose                             |
+| ------------------------- | ----------------------------------- |
+| `eslint.config.js`        | TypeScript/TSX linting rules        |
+| `.stylelintrc.json`       | CSS linting rules, Tailwind support |
+| `ruff.toml`               | Python linting rules                |
+| `.lintstagedrc.json`      | Pre-commit configuration            |
+| `.prettierrc.json`        | Code formatting rules               |
+| `.husky/pre-commit`       | Git hook script                     |
+| `.vscode/settings.json`   | VS Code auto-fix settings           |
+| `.vscode/extensions.json` | Recommended extensions              |
+
+### What This Prevents
+
+#### TypeScript/TSX (ESLint)
+
+✅ Syntax errors  
+✅ Type safety issues  
+✅ Unused variables and imports  
+✅ Unhandled promises  
+✅ Incorrect React hooks usage
+
+#### CSS (Stylelint)
+
+✅ Invalid CSS syntax  
+✅ Duplicate selectors  
+✅ Invalid at-rules
+
+#### Python (Ruff)
+
+✅ Syntax errors  
+✅ Undefined variables  
+✅ Unused imports  
+✅ PEP 8 violations
+
+#### General (Prettier)
+
+✅ Inconsistent indentation  
+✅ Mixed quotes  
+✅ Trailing whitespace
+
+### Troubleshooting
+
+#### Pre-commit hooks not running?
+
+```bash
+pnpm prepare
+chmod +x .husky/pre-commit
+```
+
+#### Linting errors blocking your commit?
+
+```bash
+# Try auto-fixing first
+pnpm lint:fix
+pnpm lint:py:fix
+
+# Last resort: bypass (NOT RECOMMENDED)
+git commit --no-verify
+```
+
+#### VS Code not showing lint errors?
+
+1. Install all 4 recommended extensions
+2. Reload VS Code: `Cmd+Shift+P` → "Developer: Reload Window"
+3. Check `.vscode/settings.json` exists
+
+#### Python linting not working?
+
+```bash
+pip install ruff
+# Or
+pnpm run setup:python
+```
+
+### Customizing Linting Rules
+
+#### Disable Specific ESLint Rules
+
+Edit `eslint.config.js`:
+
+```javascript
+rules: {
+  '@typescript-eslint/no-explicit-any': 'off',  // Turn off
+  '@typescript-eslint/no-unused-vars': 'warn',  // Warning only
+}
+```
+
+#### Disable Specific Stylelint Rules
+
+Edit `.stylelintrc.json`:
+
+```json
+{
+  "rules": {
+    "color-hex-length": null
+  }
+}
+```
+
+#### Disable Specific Ruff Checks
+
+Edit `ruff.toml`:
+
+```toml
+[lint]
+ignore = ["E501"]  # Line too long
+```
+
+### Tips for a Smooth Experience
+
+1. **Install VS Code extensions first** - Catch errors as you type
+2. **Run `pnpm lint:fix` before committing** - Auto-fix most issues
+3. **Don't use `--no-verify`** - It bypasses safety checks
+4. **Read error messages** - They tell you how to fix issues
+5. **Ask for help** - If stuck on a linting error
+
+### Additional Resources
+
+- **ESLint**: https://eslint.org/
+- **Stylelint**: https://stylelint.io/
+- **Ruff**: https://docs.astral.sh/ruff/
+- **Prettier**: https://prettier.io/
+
+---
