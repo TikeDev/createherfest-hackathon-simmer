@@ -82,6 +82,8 @@
     --color-forest: #e8f0eb;
     --color-cream: #1a2420;
     --color-surface: #1e2d28;
+    /* Stable token for light text in dark mode — never remapped */
+    --color-cream-text: #FAF4EF;
   }
 
   /* Reduced motion — disable all inline transitions globally */
@@ -95,7 +97,7 @@
   }
   html[data-theme="dark"] {
     /* shadcn semantic tokens — dark overrides using Simmer dark palette */
-    --background: var(--color-cream);   /* already remapped by dark block below */
+    --background: var(--color-cream);
     --foreground: var(--color-forest);
     --card: var(--color-surface);
     --card-foreground: var(--color-forest);
@@ -110,6 +112,7 @@
     --accent: #1e3a30;
     --accent-foreground: var(--color-forest);
     --destructive: #f87171;
+    --color-mist-pale: color-mix(in srgb, var(--color-forest) 25%, transparent);
     --border: color-mix(in srgb, var(--color-forest) 40%, transparent);
     --input: color-mix(in srgb, var(--color-forest) 40%, transparent);
     --ring: var(--color-sage);

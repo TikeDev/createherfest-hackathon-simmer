@@ -15,6 +15,7 @@ export default {
           pale: 'var(--color-mist-pale, #D4E6DA)',
         },
         cream: 'var(--color-cream, #FAF4EF)',
+        'cream-text': 'var(--color-cream-text, #FAF4EF)',
         forest: 'var(--color-forest, #2D3B35)',
         surface: 'var(--color-surface, #EEF5F0)',
         // shadcn semantic tokens

@@ -15,7 +15,7 @@ const segmentedBtnClass = (selected: boolean) =>
   `flex-1 rounded-lg px-2 py-1.5 text-xs font-medium motion-safe:transition-colors ${
     selected
       ? 'bg-sage text-white'
-      : 'bg-surface border border-mist-pale text-forest/70 hover:bg-mist-pale dark:text-cream/70 dark:border-forest'
+      : 'bg-surface border border-mist-pale text-forest/70 hover:bg-mist-pale dark:text-cream-text/70 dark:border-forest'
   }`
 
 export default function ThemeToggle({ compact = false }: ThemeToggleProps) {
@@ -45,7 +45,7 @@ export default function ThemeToggle({ compact = false }: ThemeToggleProps) {
 
   return (
     <fieldset className="space-y-2">
-      <legend className="text-xs font-semibold text-forest/80 dark:text-cream/80">Theme</legend>
+      <legend className="text-xs font-semibold text-forest/80 dark:text-cream-text/80">Theme</legend>
       <div className="flex gap-1" role="radiogroup">
         {THEME_OPTIONS.map((opt) => {
           const selected = prefs.theme === opt.value

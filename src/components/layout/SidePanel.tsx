@@ -30,14 +30,14 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   `flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium motion-safe:transition-colors ${
     isActive
       ? 'bg-sage/10 text-sage dark:text-sage'
-      : 'text-forest/70 hover:bg-surface hover:text-forest dark:text-cream/70 dark:hover:bg-forest/50 dark:hover:text-cream'
+      : 'text-forest/70 hover:bg-surface hover:text-forest dark:text-cream-text/70 dark:hover:bg-forest/50 dark:hover:text-cream'
   }`
 
 const segmentedBtnClass = (selected: boolean) =>
   `flex-1 rounded-lg px-2 py-1.5 text-xs font-medium motion-safe:transition-colors ${
     selected
       ? 'bg-sage text-white'
-      : 'bg-surface border border-mist-pale text-forest/70 hover:bg-mist-pale dark:text-cream/70 dark:border-forest'
+      : 'bg-surface border border-mist-pale text-forest/70 hover:bg-mist-pale dark:text-cream-text/70 dark:border-forest'
   }`
 
 export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps) {
@@ -146,13 +146,13 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
 
       {/* Display Settings */}
       <div className="px-4 space-y-5">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-forest/80 dark:text-cream/80">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-forest/80 dark:text-cream-text/80">
           Display Settings
         </h3>
 
         {/* Font Size Stepper */}
         <div className="space-y-2" role="group" aria-labelledby="font-size-label">
-          <span id="font-size-label" className="text-xs font-semibold text-forest/80 dark:text-cream/80">Font Size</span>
+          <span id="font-size-label" className="text-xs font-semibold text-forest/80 dark:text-cream-text/80">Font Size</span>
           <div className="flex items-center gap-2">
             <Button
               type="button"
@@ -191,7 +191,7 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
 
         {/* Font Family */}
         <fieldset className="space-y-2" role="radiogroup">
-          <legend className="text-xs font-semibold text-forest/80 dark:text-cream/80">Font Family</legend>
+          <legend className="text-xs font-semibold text-forest/80 dark:text-cream-text/80">Font Family</legend>
           <div className="flex gap-1">
             {FONT_FAMILY_OPTIONS.map((opt) => {
               const selected = prefs.fontFamily === opt.value
@@ -218,7 +218,7 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
 
         {/* Contrast */}
         <div className="flex items-center justify-between">
-          <span id="high-contrast-label" className="text-xs font-semibold text-forest/80 dark:text-cream/80">High Contrast</span>
+          <span id="high-contrast-label" className="text-xs font-semibold text-forest/80 dark:text-cream-text/80">High Contrast</span>
           <Switch
             checked={prefs.contrastMode === 'high'}
             onCheckedChange={(checked) => updatePrefs({ contrastMode: checked ? 'high' : 'default' })}
@@ -228,7 +228,7 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
 
         {/* Color Blind Mode */}
         <fieldset className="space-y-2" role="radiogroup">
-          <legend className="text-xs font-semibold text-forest/80 dark:text-cream/80">Color Blind Mode</legend>
+          <legend className="text-xs font-semibold text-forest/80 dark:text-cream-text/80">Color Blind Mode</legend>
           <div className="flex gap-1">
             {COLORBLIND_OPTIONS.map((opt) => {
               const selected = prefs.colorBlindMode === opt.value
@@ -255,7 +255,7 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
 
       {/* Panel Position */}
       <fieldset className="px-4 space-y-2" role="radiogroup">
-        <legend className="text-xs font-semibold text-forest/80 dark:text-cream/80">Panel Position</legend>
+        <legend className="text-xs font-semibold text-forest/80 dark:text-cream-text/80">Panel Position</legend>
         <div className="flex gap-1">
           {(['left', 'right'] as const).map((side) => {
             const selected = prefs.panelSide === side
@@ -286,7 +286,7 @@ export default function SidePanel({ isOpen, onClose, isMobile }: SidePanelProps)
           type="button"
           disabled
           aria-label="About Simmer (coming soon)"
-          className="text-xs text-forest/80 hover:text-sage motion-safe:transition-colors disabled:opacity-50 disabled:cursor-not-allowed dark:text-cream/80 dark:hover:text-sage"
+          className="text-xs text-forest/80 hover:text-sage motion-safe:transition-colors disabled:opacity-50 disabled:cursor-not-allowed dark:text-cream-text/80 dark:hover:text-sage"
         >
           About Simmer
         </button>

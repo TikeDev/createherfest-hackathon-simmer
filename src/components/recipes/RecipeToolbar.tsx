@@ -92,7 +92,7 @@ export default function RecipeToolbar({
           className="pl-9"
         />
         <svg
-          className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-forest/40 dark:text-cream/40"
+          className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-forest/40 dark:text-cream-text/40"
           aria-hidden="true"
           fill="none"
           stroke="currentColor"
@@ -105,7 +105,7 @@ export default function RecipeToolbar({
             type="button"
             onClick={() => onQueryChange('')}
             aria-label="Clear search"
-            className="absolute right-3 top-1/2 -translate-y-1/2 flex h-5 w-5 items-center justify-center rounded-full text-forest/40 hover:text-forest focus:outline-none focus:ring-2 focus:ring-sage dark:text-cream/40 dark:hover:text-cream"
+            className="absolute right-3 top-1/2 -translate-y-1/2 flex h-5 w-5 items-center justify-center rounded-full text-forest/40 hover:text-forest focus:outline-none focus:ring-2 focus:ring-sage dark:text-cream-text/40 dark:hover:text-cream"
           >
             <span aria-hidden="true">&times;</span>
           </button>

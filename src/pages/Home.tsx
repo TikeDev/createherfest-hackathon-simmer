@@ -81,7 +81,7 @@ export default function Home() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-headline text-forest dark:text-cream">
+        <h1 className="text-2xl font-headline text-forest dark:text-cream-text">
           {hasSession ? 'Here\'s what we found.' : 'My Recipes'}
         </h1>
         <Link
@@ -102,13 +102,13 @@ export default function Home() {
               </span>
             )}
             {session?.note && (
-              <span className="text-sm text-forest/70 italic dark:text-cream/70">"{session.note}"</span>
+              <span className="text-sm text-forest/70 italic dark:text-cream-text/70">"{session.note}"</span>
             )}
           </div>
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="text-xs text-forest/50 hover:text-sage transition-colors dark:text-cream/50"
+            className="text-xs text-forest/50 hover:text-sage transition-colors dark:text-cream-text/50"
           >
             ← Start over
           </button>
@@ -116,14 +116,14 @@ export default function Home() {
       )}
 
       {loading && (
-        <p className="text-sm text-forest/60 dark:text-cream/60" role="status">
+        <p className="text-sm text-forest/60 dark:text-cream-text/60" role="status">
           Simmer is thinking...
         </p>
       )}
 
       {!loading && totalCount === 0 && (
         <div className="rounded-lg border border-dashed border-mist-pale px-6 py-12 text-center space-y-3">
-          <p className="text-forest/60 text-sm dark:text-cream/60">No recipes yet.</p>
+          <p className="text-forest/60 text-sm dark:text-cream-text/60">No recipes yet.</p>
           <Link
             to="/extract"
             className="inline-block text-sm text-sage font-medium underline hover:text-sage-dark"
@@ -154,7 +154,7 @@ export default function Home() {
 
           {/* Visible results count */}
           {resultCount !== totalCount && (
-            <p className="text-xs text-forest/50 dark:text-cream/50">
+            <p className="text-xs text-forest/50 dark:text-cream-text/50">
               Showing {resultCount} of {totalCount} recipes
             </p>
           )}
@@ -168,7 +168,7 @@ export default function Home() {
             </ul>
           ) : (
             <div className="rounded-lg border border-dashed border-mist-pale px-6 py-12 text-center space-y-3">
-              <p className="text-forest/60 text-sm dark:text-cream/60">
+              <p className="text-forest/60 text-sm dark:text-cream-text/60">
                 No recipes match your search.
               </p>
               <button

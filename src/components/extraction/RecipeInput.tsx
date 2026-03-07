@@ -73,7 +73,7 @@ export function RecipeInput({ status, onSubmit }: RecipeInputProps) {
             onChange={(e) => setUrl(e.target.value)}
             placeholder="https://www.example.com/recipes/chocolate-cake"
             disabled={isLoading}
-            className="w-full rounded-lg border border-mist-pale px-4 py-3 text-sm focus:border-sage focus:outline-none focus:ring-2 focus:ring-sage/20 disabled:opacity-50"
+            className="w-full rounded-lg border border-mist-pale bg-cream text-forest px-4 py-3 text-sm placeholder:text-forest/40 focus:border-sage focus:outline-none focus:ring-2 focus:ring-sage/20 disabled:opacity-50"
           />
         </div>
       ) : (
@@ -88,7 +88,7 @@ export function RecipeInput({ status, onSubmit }: RecipeInputProps) {
             placeholder="Paste the full recipe here — ingredients, steps, and any intro notes."
             rows={10}
             disabled={isLoading}
-            className="w-full rounded-lg border border-mist-pale px-4 py-3 text-sm focus:border-sage focus:outline-none focus:ring-2 focus:ring-sage/20 disabled:opacity-50 resize-y"
+            className="w-full rounded-lg border border-mist-pale bg-cream text-forest px-4 py-3 text-sm placeholder:text-forest/40 focus:border-sage focus:outline-none focus:ring-2 focus:ring-sage/20 disabled:opacity-50 resize-y"
           />
         </div>
       )}
