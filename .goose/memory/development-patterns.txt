@@ -1,0 +1,3 @@
+# dark-mode text-colors simmer-patterns css-variables
+{"pattern":"Dark mode text colors in Simmer app","rule":"ALWAYS use dark:text-cream-text for text that needs to be visible in dark mode","wrongPattern":"dark:text-cream (becomes dark #1a2420 in dark mode = invisible)","correctPattern":"dark:text-cream-text (stays light #FAF4EF in dark mode = visible)","reason":"The app uses semantic color swapping: --color-cream and --color-forest swap meanings in dark mode. --color-cream-text is a STABLE token that never changes.","whereToCheck":"git show 938fa80 to see the original fix","verification":"Before copying any dark mode pattern, check if it uses cream-text or just cream","timestamp":"2026-03-07T04:10:00Z"}
+

@@ -1,0 +1,3 @@
+# text-editor file-corruption lesson-learned
+{"issue":"textEditor view adds line numbers and formatting (markdown code blocks, file paths)","rootCause":"Developer.textEditor view command formats output for display with line numbers like '1: content'","mistake":"Writing that formatted VIEW output back to files corrupts them with line numbers","prevention":["NEVER write textEditor VIEW output back to a file","Use Developer.shell (cat, head, tail) for reading raw file content","Use textEditor str_replace or diff for surgical edits","Only use textEditor write with clean, manually constructed content"],"when":"2026-03-07","files_affected":["src/index.css"]}
+
