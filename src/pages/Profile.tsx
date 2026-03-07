@@ -4,6 +4,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { handleRadioKeyDown } from "@/utils/a11y";
 import { Slider } from "@/components/ui/slider";
 import { ALARM_SOUNDS } from "@/constants/alarmSounds";
+import { ShieldAlert, Accessibility, ChefHat, Bell, Clock, ArrowLeft } from "lucide-react";
 import { saveCustomAlarm, deleteCustomAlarm } from "@/storage/customAlarms";
 import {
   FDA_ALLERGENS,
@@ -185,10 +186,12 @@ function FreeTextChips({
 /** Collapsible section card */
 function Section({
   title,
+  icon,
   defaultOpen,
   children,
 }: {
   title: string;
+  icon?: React.ReactNode;
   defaultOpen?: boolean;
   children: React.ReactNode;
 }) {
@@ -202,7 +205,10 @@ function Section({
         aria-expanded={isOpen}
         className="flex w-full cursor-pointer items-center justify-between px-5 py-4 text-forest focus:outline-none focus:ring-2 focus:ring-sage focus:ring-offset-2 rounded-xl dark:text-cream-text"
       >
-        <h2 className="text-base font-headline">{title}</h2>
+        <h2 className="flex items-center gap-2 text-lg font-bold font-headline">
+          {icon}
+          {title}
+        </h2>
         <span
           aria-hidden="true"
           className={`text-forest/40 transition-transform duration-300 dark:text-cream-text/40 ${isOpen ? "rotate-180" : ""}`}
@@ -289,8 +295,9 @@ export default function Profile() {
           </span>
           <Link
             to="/recipes"
-            className="rounded-lg bg-surface border border-mist-pale px-3 py-1.5 text-xs font-medium text-forest/70 hover:border-mist hover:text-forest transition-colors focus:outline-none focus:ring-2 focus:ring-sage focus:ring-offset-2 dark:text-cream-text/70 dark:border-forest dark:hover:text-cream-text"
+            className="inline-flex items-center gap-1 rounded-lg bg-surface border border-mist-pale px-3 py-1.5 text-xs font-medium text-forest/70 hover:border-mist hover:text-forest transition-colors focus:outline-none focus:ring-2 focus:ring-sage focus:ring-offset-2 dark:text-cream-text/70 dark:border-forest dark:hover:text-cream-text"
           >
+            <ArrowLeft size={14} aria-hidden="true" />
             Back to recipes
           </Link>
         </div>
@@ -302,7 +309,11 @@ export default function Profile() {
       </p>
 
       {/* Section 1: Safety & Allergens */}
-      <Section title="Safety & Allergens" defaultOpen>
+      <Section
+        title="Safety & Allergens"
+        icon={<ShieldAlert size={20} aria-hidden="true" />}
+        defaultOpen
+      >
         <ChipGroup
           legend="Allergens (FDA top 9)"
           options={FDA_ALLERGENS}
@@ -330,7 +341,10 @@ export default function Profile() {
       </Section>
 
       {/* Section 2: Physical & Accessibility Needs */}
-      <Section title="Physical & Accessibility Needs">
+      <Section
+        title="Physical & Accessibility Needs"
+        icon={<Accessibility size={20} aria-hidden="true" />}
+      >
         <RadioPillGroup
           legend="How long have you had these limitations?"
           options={LIMITATION_DURATIONS}
@@ -354,7 +368,7 @@ export default function Profile() {
       </Section>
 
       {/* Section 3: Cooking Preferences */}
-      <Section title="Cooking Preferences">
+      <Section title="Cooking Preferences" icon={<ChefHat size={20} aria-hidden="true" />}>
         <ChipGroup
           legend="Diet patterns"
           options={DIET_PATTERNS}
@@ -386,7 +400,7 @@ export default function Profile() {
       </Section>
 
       {/* Section 4: Timer Alarms */}
-      <Section title="Timer Alarms">
+      <Section title="Timer Alarms" icon={<Bell size={20} aria-hidden="true" />}>
         {/* Alarm Sound Selection */}
         <fieldset className="space-y-2">
           <legend className="text-sm font-semibold text-forest dark:text-cream-text">
@@ -418,10 +432,10 @@ export default function Profile() {
             min={0}
             max={100}
             step={5}
-            className="w-full"
+            className="w-full max-w-md"
             aria-label="Alarm volume"
           />
-          <div className="flex justify-between text-xs text-forest/50 dark:text-cream-text/50">
+          <div className="flex max-w-md justify-between text-xs text-forest/50 dark:text-cream-text/50">
             <span>0%</span>
             <span>50%</span>
             <span>100%</span>
@@ -431,7 +445,7 @@ export default function Profile() {
         {/* Visual Alarm Toggle */}
         <fieldset className="space-y-2">
           <legend className="text-sm font-semibold text-forest dark:text-cream-text">
-            Accessibility
+            Visual Alarm
           </legend>
           <label className="flex items-center gap-2 text-sm text-forest dark:text-cream-text">
             <input
@@ -440,7 +454,7 @@ export default function Profile() {
               onChange={(e) => update({ visualAlarmEnabled: e.target.checked })}
               className="rounded border-mist-pale text-sage focus:ring-2 focus:ring-sage focus:ring-offset-2"
             />
-            Enable visual alarm (screen flash for deaf/hard of hearing)
+            Screen flash for deaf/hard of hearing
           </label>
         </fieldset>
 
@@ -495,7 +509,7 @@ export default function Profile() {
       </Section>
 
       {/* Section 5: Time & Budget */}
-      <Section title="Time & Budget">
+      <Section title="Time & Budget" icon={<Clock size={20} aria-hidden="true" />}>
         {/* Time preference */}
         <fieldset className="space-y-2">
           <legend className="text-sm font-semibold text-forest dark:text-cream-text">
