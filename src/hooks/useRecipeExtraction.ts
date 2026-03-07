@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react'
 import { runRecipeAgent } from '@/agent/recipeAgent'
 import { fetchRecipeFromUrl } from '@/agent/fetcher'
 import { saveRecipe } from '@/storage/recipes'
+import { classifyGroceries } from '@/agent/classifyGroceries'
 import type { RecipeJSON } from '@/types/recipe'
 import type { ExtractionStatus, ExtractionProgress } from '@/types/agent'
 
@@ -17,6 +18,7 @@ interface UseRecipeExtractionReturn {
 const STEP_LABELS = {
   fetching: 'Scraping recipe...',
   extracting: 'Extracting recipe with AI...',
+  classifying: 'Organizing groceries by aisle...',
   saving: 'Saving recipe...',
   done: 'Done!',
 }
@@ -69,10 +71,28 @@ export function useRecipeExtraction(): UseRecipeExtractionReturn {
         })
 
         // If a URL was fetched and the model didn't extract a title, use the page title
-        const finalRecipe: RecipeJSON =
+        let finalRecipe: RecipeJSON =
           !recipe.title && titleHint
             ? { ...recipe, title: titleHint }
             : recipe
+
+        // Classify groceries and populate ingredient categories
+        setStatus('extracting')
+        advanceStep(STEP_LABELS.classifying)
+        
+        try {
+          const categories = await classifyGroceries(finalRecipe.ingredients)
+          finalRecipe = {
+            ...finalRecipe,
+            ingredients: finalRecipe.ingredients.map((ing) => ({
+              ...ing,
+              category: categories[ing.id] || 'Other',
+            })),
+          }
+        } catch (classifyError) {
+          console.warn('Failed to classify groceries during import:', classifyError)
+          // Continue without categories - they'll be classified on-demand in cooking mode
+        }
 
         setStatus('saving')
         advanceStep(STEP_LABELS.saving)

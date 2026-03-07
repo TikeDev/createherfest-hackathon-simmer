@@ -6,6 +6,11 @@ export async function saveRecipe(recipe: RecipeJSON): Promise<void> {
   await db.put('recipes', recipe)
 }
 
+export async function updateRecipe(recipe: RecipeJSON): Promise<void> {
+  const db = await getDB()
+  await db.put('recipes', recipe)
+}
+
 export async function getRecipe(id: string): Promise<RecipeJSON | undefined> {
   const db = await getDB()
   return db.get('recipes', id)

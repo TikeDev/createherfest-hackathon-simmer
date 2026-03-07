@@ -13,16 +13,21 @@ function formatUnit(ingredient: Ingredient, mode: UnitMode): string {
     return ingredient.raw
   }
 
-  const entry = ingredient.units[0]
-
-  if (mode === 'metric' && entry?.grams != null) {
-    const confidence = entry.confidenceLevel !== 'high' ? ` (~)` : ''
-    return `${entry.grams}g${confidence} ${ingredient.name}`
+  // Find the appropriate unit entry based on mode
+  if (mode === 'metric') {
+    const gramsEntry = ingredient.units.find(entry => entry.grams != null)
+    if (gramsEntry) {
+      const confidence = gramsEntry.confidenceLevel !== 'high' ? ` (~)` : ''
+      return `${gramsEntry.grams}g${confidence} ${ingredient.name}`
+    }
   }
 
-  if (mode === 'volume' && entry?.mlEquivalent != null) {
-    const confidence = entry.confidenceLevel !== 'high' ? ` (~)` : ''
-    return `${entry.explanation ?? `${entry.mlEquivalent}ml`}${confidence} ${ingredient.name}`
+  if (mode === 'volume') {
+    const volumeEntry = ingredient.units.find(entry => entry.mlEquivalent != null)
+    if (volumeEntry) {
+      const confidence = volumeEntry.confidenceLevel !== 'high' ? ` (~)` : ''
+      return `${volumeEntry.explanation ?? `${volumeEntry.mlEquivalent}ml`}${confidence} ${ingredient.name}`
+    }
   }
 
   return ingredient.raw
