@@ -1,0 +1,3 @@
+# project_info context deadline_critical
+{"project_name":"Simmer","team_name":"Spice Studio","deadline":"2026-03-07 (TODAY - TONIGHT!)","hackathon":"CreateHER Fest #75HER Challenge 2026","purpose":"React PWA for accessible recipe discovery and cooking guidance for users with physical/cognitive limitations","tech_stack":{"frontend":"React 19 + TypeScript","bundler":"Vite 6","styling":"Tailwind CSS 3 + ShadCN UI","storage":"IndexedDB via idb","ai":"OpenAI gpt-5-nano","backend":"Vercel serverless functions","package_manager":"pnpm"},"status":"Feature-complete MVP, Phase 5 alarm integration in progress","working_directory":"/Users/kerlinemoncylap/Documents/git/createherfest-hackathon-recipe-app","branch":"main"}
+

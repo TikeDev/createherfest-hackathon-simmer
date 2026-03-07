@@ -1,0 +1,3 @@
+# dev_patterns critical
+{"dark_mode_text":"ALWAYS use dark:text-cream-text (not dark:text-cream which is invisible)","rtk_prefix":"Prefix shell commands with rtk for token savings","browser":"Default is Chrome Beta - never open new windows/tabs","commands":{"dev":"pnpm dev","dev_full":"pnpm dev:full (with Vercel API routes)","dev_browser":"pnpm dev:browser (launches Chrome Beta)","build":"pnpm build","test":"pnpm test"}}
+

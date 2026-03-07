@@ -1,0 +1,3 @@
+# bugs issues todo
+{"critical":["No alarm audio files yet (only placeholder notes)","Visual alarm too intense (red full-screen pulse)","Timer display shifts (proportional font issue)","Phase 5 alarm trigger logic not yet implemented in CookingMode"],"nice_to_have":["Search/sort/filter for Saved Recipes page","Implement /api/scrape.py with recipe-scrapers","Fix PWA standalone mode with app icons"]}
+

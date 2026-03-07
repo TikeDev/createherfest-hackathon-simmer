@@ -1,0 +1,3 @@
+# features status
+{"implemented":["User profile with accessibility preferences","Energy level selection with natural language input","Hard filtering (allergens, excluded ingredients, restricted appliances)","Soft scoring with explainability","Recipe detail view with unit toggle","CookingMode with step-by-step checkboxes","AI recipe extraction agent","Offline-capable PWA with IndexedDB","Dark/light theme toggle","Alarm settings in profile (Phases 1-4 complete)"],"in_progress":["Phase 5: Alarm playback logic integration in CookingMode"]}
+
