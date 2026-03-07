@@ -104,12 +104,13 @@ Add your `VITE_OPENAI_API_KEY` to `.env`, then open **http://localhost:5173** in
 
 ## 👥 Team & Acknowledgments
 
-**Team Name:** [Insert Team Name]
+**Team Name:** [Spice Studio]
 
 | Name | Role | GitHub | LinkedIn |
 | :---- | :---- | :---- | :---- |
-| [Name] | [Role] | [@username] | [Profile Link] |
-| [Name] | [Role] | [@username] | [Profile Link] |
+| [Kerline Moncy] | [Role] | [@username] | [Profile Link] |
+| [Paula Wass Berner] | [Role] | [@username] | [Profile Link] |
+| [Rahul Basu] | [Role] | [@username] | [Profile Link] |
 
 **Special thanks to:** CreateHER Fest and the #75HER Challenge organizers.
 

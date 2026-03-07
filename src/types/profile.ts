@@ -80,6 +80,10 @@ export const BUDGET_LEVELS = ['low', 'medium', 'high'] as const
 export const LIMITATION_DURATIONS = ['temporary', 'chronic', 'permanent', 'mixed'] as const
 export const PROFILE_ROLES = ['primary', 'guest'] as const
 
+// --- Alarm preferences constants ---
+export const ALARM_SOUND_OPTIONS = ['gentle', 'moderate', 'urgent', 'custom'] as const
+export type AlarmSound = (typeof ALARM_SOUND_OPTIONS)[number]
+
 // --- UserProfile interface ---
 
 export interface UserProfile {
@@ -105,4 +109,11 @@ export interface UserProfile {
   cognitiveLoad: (typeof COGNITIVE_LOAD_LEVELS)[number]
   timePreferenceMinutes?: number
   budgetLevel?: (typeof BUDGET_LEVELS)[number]
+
+  // --- Timer alarm preferences ---
+  alarmEnabled: boolean
+  alarmSound: AlarmSound
+  alarmVolume: number // 0-100
+  visualAlarmEnabled: boolean // Screen flash for deaf/hard of hearing
+  customAlarmUploaded: boolean // Whether user has uploaded a custom sound
 }
