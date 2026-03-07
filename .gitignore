@@ -65,3 +65,4 @@ pnpm-debug.log*
 
 JOURNAL.md
 .vercel
+vercel.json.backup
