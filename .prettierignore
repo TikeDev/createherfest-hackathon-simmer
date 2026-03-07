@@ -1,0 +1,24 @@
+# Build outputs
+dist/
+build/
+.next/
+.vercel/
+
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Generated files
+*.min.js
+*.min.css
+pnpm-lock.yaml
+package-lock.json
