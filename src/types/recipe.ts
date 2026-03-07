@@ -72,6 +72,8 @@ export interface RecipeMetadata {
   cookTimeMinutes?: number | null
   servings?: string | null
   rawText?: string // Preserved so the user can read the original while offline
+  cognitiveScore?: 1 | 2 | 3
+  cognitiveScoreRaw?: number
 }
 
 export interface RecipeJSON {
@@ -84,4 +86,5 @@ export interface RecipeJSON {
   ingredients: Ingredient[]
   steps: Step[]
   metadata: RecipeMetadata
+
 }

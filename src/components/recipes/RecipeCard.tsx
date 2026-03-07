@@ -3,9 +3,11 @@ import type { RecipeJSON } from '@/types/recipe'
 
 interface RecipeCardProps {
   recipe: RecipeJSON
+  /** Optional reason shown on suggestion cards (e.g. from the LLM) */
+  reason?: string
 }
 
-export default function RecipeCard({ recipe }: RecipeCardProps) {
+export default function RecipeCard({ recipe, reason }: RecipeCardProps) {
   const savedDate = new Date(recipe.extractedAt).toLocaleDateString(undefined, {
     month: 'short',
     day: 'numeric',
@@ -34,6 +36,9 @@ export default function RecipeCard({ recipe }: RecipeCardProps) {
           <span>{recipe.ingredients.length} ingredients</span>
           <span>{recipe.steps.length} steps</span>
         </div>
+        {reason && (
+          <p className="mt-2 text-xs text-sage font-medium">{reason}</p>
+        )}
       </Link>
     </li>
   )

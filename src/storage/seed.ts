@@ -130,6 +130,7 @@ const DEMO_RECIPES: RecipeJSON[] = [
       prepTimeMinutes: 15,
       cookTimeMinutes: 30,
       servings: '4',
+      cognitiveScore: 1,
     },
   },
 
@@ -287,6 +288,7 @@ const DEMO_RECIPES: RecipeJSON[] = [
       prepTimeMinutes: 10,
       cookTimeMinutes: 30,
       servings: '4',
+      cognitiveScore: 2,
     },
   },
 
@@ -403,6 +405,341 @@ const DEMO_RECIPES: RecipeJSON[] = [
       prepTimeMinutes: 10,
       cookTimeMinutes: 25,
       servings: '4–6',
+      cognitiveScore: 3
+    },
+  },
+
+  // ── Score 1: Miso Soup ────────────────────────────────────────
+  // Quick, minimal-tool Japanese comfort food. Tests: soy allergen.
+  {
+    id: 'demo-japan-miso-soup',
+    title: 'Miso Soup (Japanese)',
+    sourceDomain: 'demo',
+    extractedAt: '2026-03-04T10:00:00.000Z',
+    preamble: {
+      raw: 'One of the most restorative meals you can make in 12 minutes. The key is never boiling the miso — heat kills the flavour and the good bacteria. Add it off the heat right at the end.',
+      tips: [
+        'Dissolve the miso in a small ladle of broth before adding it to the pot — never drop it in dry.',
+        'Dried wakame expands a lot — 1 tablespoon is plenty.',
+        'White miso is milder and slightly sweet. Red miso is deeper and saltier. Either works.',
+      ],
+      substitutions: [
+        {
+          original: 'dashi stock',
+          substitute: 'vegetable broth or plain water',
+          note: 'A mild vegetable broth works well. Plain water gives a lighter result.',
+          sourceNote: 'preamble',
+        },
+      ],
+      techniqueNotes: ['Miso must be added off the heat. Boiling destroys its flavour compounds and probiotic cultures.'],
+    },
+    ingredients: [
+      {
+        id: 'ing-ms-1', raw: '4 cups dashi stock or vegetable broth', name: 'dashi stock',
+        quantity: 4, unit: 'cup',
+        units: [{ original: '4 cups', mlEquivalent: 950, confidenceLevel: 'high' }],
+      },
+      {
+        id: 'ing-ms-2', raw: '3 tablespoons white or red miso paste', name: 'miso paste',
+        quantity: 3, unit: 'tablespoon',
+        units: [{ original: '3 tablespoons', grams: 54, confidenceLevel: 'high' }],
+      },
+      {
+        id: 'ing-ms-3', raw: '150g silken tofu, cut into small cubes', name: 'silken tofu',
+        quantity: 150, unit: 'g',
+        units: [{ original: '150g', grams: 150, confidenceLevel: 'high' }],
+      },
+      {
+        id: 'ing-ms-4', raw: '1 tablespoon dried wakame seaweed', name: 'dried wakame',
+        quantity: 1, unit: 'tablespoon',
+        units: [{ original: '1 tablespoon', grams: 4, confidenceLevel: 'medium', explanation: '1 tbsp dried wakame ≈ 4g' }],
+      },
+      {
+        id: 'ing-ms-5', raw: '2 green onions, thinly sliced', name: 'green onions',
+        quantity: 2, unit: null,
+        units: [{ original: '2 stalks', confidenceLevel: 'high' }],
+      },
+    ],
+    steps: [
+      {
+        id: 'step-ms-1', index: 1,
+        text: 'Soak the dried wakame in a small bowl of cold water for 5 minutes until it rehydrates and expands. Drain and set aside.',
+        timingMinutes: 5, isCritical: false,
+        annotations: [{ type: 'tip', text: 'Wakame expands 5–6× its dry volume — don\'t use too much.' }],
+      },
+      {
+        id: 'step-ms-2', index: 2,
+        text: 'Heat the dashi or broth in a medium saucepan over medium heat until it just begins to steam. Do not bring it to a full boil.',
+        timingMinutes: 3, isCritical: false, annotations: [],
+      },
+      {
+        id: 'step-ms-3', index: 3,
+        text: 'Add the tofu cubes and drained wakame. Simmer gently for 2 minutes.',
+        timingMinutes: 2, isCritical: false, annotations: [],
+      },
+      {
+        id: 'step-ms-4', index: 4,
+        text: 'Remove the pot from the heat. Scoop the miso paste into a ladle, dip it into the hot broth, and whisk until fully dissolved. Stir the dissolved miso into the pot.',
+        isCritical: true,
+        criticalNote: 'Never add miso while the pot is on the heat — boiling ruins the flavour.',
+        annotations: [{ type: 'technique', text: 'Dissolving miso in a ladle first prevents lumps and ensures it disperses evenly.' }],
+      },
+      {
+        id: 'step-ms-5', index: 5,
+        text: 'Ladle into bowls and top with sliced green onions. Serve immediately.',
+        isCritical: false, annotations: [],
+      },
+    ],
+    metadata: {
+      totalTimeMinutes: 12,
+      prepTimeMinutes: 5,
+      cookTimeMinutes: 7,
+      servings: '2–3',
+      cognitiveScore: 1,
+    },
+  },
+
+  // ── Score 2: Shakshuka ────────────────────────────────────────
+  // One-pan Middle Eastern eggs in spiced tomato sauce. Tests: egg allergen.
+  {
+    id: 'demo-middleeast-shakshuka',
+    title: 'Shakshuka (Middle Eastern Eggs in Tomato Sauce)',
+    sourceDomain: 'demo',
+    extractedAt: '2026-03-05T10:00:00.000Z',
+    preamble: {
+      raw: 'Shakshuka is a deeply satisfying one-pan meal popular across North Africa and the Middle East. Eggs are poached directly in a spiced tomato sauce — the sauce keeps cooking while the whites set. Watch the eggs closely at the end; the yolks should be just set or still runny depending on your preference.',
+      tips: [
+        'Crack each egg into a small cup first so you can gently lower it into the well without breaking the yolk.',
+        'Cover the pan with a lid to help the whites set without overcooking the yolks.',
+        'Serve straight from the pan with crusty bread to mop up the sauce.',
+      ],
+      substitutions: [
+        {
+          original: 'canned crushed tomatoes',
+          substitute: '4–5 fresh ripe tomatoes, roughly chopped',
+          note: 'Fresh tomatoes will need a few extra minutes to break down.',
+          sourceNote: 'preamble',
+        },
+      ],
+      techniqueNotes: ['Making wells in the sauce lets you control exactly where each egg lands. The well holds the egg in place while the white sets.'],
+    },
+    ingredients: [
+      {
+        id: 'ing-sk-1', raw: '2 tablespoons olive oil', name: 'olive oil',
+        quantity: 2, unit: 'tablespoon',
+        units: [{ original: '2 tablespoons', mlEquivalent: 30, confidenceLevel: 'high' }],
+      },
+      {
+        id: 'ing-sk-2', raw: '1 medium onion, finely chopped', name: 'onion',
+        quantity: 1, unit: null,
+        units: [{ original: '1 medium', grams: 150, confidenceLevel: 'high' }],
+      },
+      {
+        id: 'ing-sk-3', raw: '1 red bell pepper, diced', name: 'red bell pepper',
+        quantity: 1, unit: null,
+        units: [{ original: '1 large', grams: 160, confidenceLevel: 'high' }],
+      },
+      {
+        id: 'ing-sk-4', raw: '3 cloves garlic, minced', name: 'garlic',
+        quantity: 3, unit: 'clove',
+        units: [{ original: '3 cloves', confidenceLevel: 'high' }],
+      },
+      {
+        id: 'ing-sk-5', raw: '1 teaspoon ground cumin', name: 'ground cumin',
+        quantity: 1, unit: 'teaspoon',
+        units: [{ original: '1 teaspoon', grams: 2, confidenceLevel: 'high' }],
+      },
+      {
+        id: 'ing-sk-6', raw: '1 teaspoon smoked paprika', name: 'smoked paprika',
+        quantity: 1, unit: 'teaspoon',
+        units: [{ original: '1 teaspoon', grams: 2, confidenceLevel: 'high' }],
+      },
+      {
+        id: 'ing-sk-7', raw: '400g canned crushed tomatoes (one standard tin)', name: 'crushed tomatoes',
+        quantity: 400, unit: 'g',
+        units: [{ original: '400g', grams: 400, confidenceLevel: 'high' }],
+      },
+      {
+        id: 'ing-sk-8', raw: '4 large eggs', name: 'eggs',
+        quantity: 4, unit: null,
+        units: [{ original: '4 large', grams: 200, confidenceLevel: 'high' }],
+      },
+      {
+        id: 'ing-sk-9', raw: 'Salt and black pepper to taste', name: 'salt and pepper',
+        quantity: null, unit: null,
+        units: [{ original: 'to taste', confidenceLevel: 'high' }],
+      },
+      {
+        id: 'ing-sk-10', raw: 'Fresh parsley or cilantro, to garnish', name: 'fresh parsley',
+        quantity: null, unit: null,
+        units: [{ original: 'to garnish', confidenceLevel: 'high' }],
+      },
+    ],
+    steps: [
+      {
+        id: 'step-sk-1', index: 1,
+        text: 'Heat the olive oil in a large skillet or frying pan over medium heat. Add the onion and red pepper. Cook, stirring occasionally, until softened — about 7 minutes.',
+        timingMinutes: 7, isCritical: false, annotations: [],
+      },
+      {
+        id: 'step-sk-2', index: 2,
+        text: 'Add the garlic, cumin, and smoked paprika. Stir for 1 minute until fragrant.',
+        timingMinutes: 1, isCritical: false,
+        annotations: [{ type: 'tip', text: 'Don\'t let the garlic brown — it turns bitter. Keep the heat at medium.' }],
+      },
+      {
+        id: 'step-sk-3', index: 3,
+        text: 'Pour in the crushed tomatoes. Season with salt and pepper. Simmer uncovered for 10 minutes until the sauce thickens slightly.',
+        timingMinutes: 10, isCritical: false, annotations: [],
+      },
+      {
+        id: 'step-sk-4', index: 4,
+        text: 'Use the back of a spoon to make 4 shallow wells in the sauce. Crack one egg into each well.',
+        isCritical: false,
+        annotations: [{ type: 'technique', text: 'Crack eggs into a small cup first — it\'s easier to lower them in without breaking the yolk.' }],
+      },
+      {
+        id: 'step-sk-5', index: 5,
+        text: 'Reduce heat to low. Cover the pan with a lid and cook for 5–8 minutes, until the whites are set but the yolks are still runny (or fully set if preferred).',
+        timingMinutes: 8, isCritical: true,
+        criticalNote: 'Watch closely — eggs continue cooking off the heat. Remove at 5 min for runny yolks, 8 min for fully set.',
+        annotations: [],
+      },
+      {
+        id: 'step-sk-6', index: 6,
+        text: 'Remove from heat. Scatter fresh parsley or cilantro over the top. Serve straight from the pan with bread.',
+        isCritical: false, annotations: [],
+      },
+    ],
+    metadata: {
+      totalTimeMinutes: 30,
+      prepTimeMinutes: 10,
+      cookTimeMinutes: 20,
+      servings: '2–3',
+      cognitiveScore: 2,
+    },
+  },
+
+  // ── Score 3: Pasta Carbonara ──────────────────────────────────
+  // Timing-critical Italian pasta. Tests: egg + dairy allergens, stovetop restriction.
+  {
+    id: 'demo-italy-pasta-carbonara',
+    title: 'Pasta Carbonara (Italian)',
+    sourceDomain: 'demo',
+    extractedAt: '2026-03-06T10:00:00.000Z',
+    preamble: {
+      raw: 'Real carbonara has no cream — the silky sauce comes entirely from eggs, cheese, and starchy pasta water. The technique is everything: you want the residual heat from the pasta to gently cook the eggs into a sauce without scrambling them. Keep the pan off the heat when you add the egg mixture, and work fast.',
+      tips: [
+        'Salt your pasta water generously — it should taste like the sea.',
+        'Reserve at least a full cup of pasta water before draining. The starch is essential for the sauce.',
+        'Grate the cheese very finely so it melts smoothly into the eggs.',
+        'Let the pancetta pan cool for 30 seconds off the heat before adding the pasta and eggs.',
+      ],
+      substitutions: [
+        {
+          original: 'guanciale or pancetta',
+          substitute: 'streaky bacon or smoked bacon lardons',
+          note: 'Smoked bacon gives a slightly different flavour but works well.',
+          sourceNote: 'preamble',
+        },
+        {
+          original: 'Pecorino Romano',
+          substitute: 'Parmesan',
+          note: 'Parmesan is milder. A 50/50 mix of both is classic.',
+          sourceNote: 'preamble',
+        },
+      ],
+      techniqueNotes: [
+        'The egg mixture cooks from the heat of the pasta — not the stove. Always remove from heat first.',
+        'Tossing continuously while adding pasta water controls the temperature and prevents scrambling.',
+      ],
+    },
+    ingredients: [
+      {
+        id: 'ing-pc-1', raw: '400g spaghetti or rigatoni', name: 'spaghetti',
+        quantity: 400, unit: 'g',
+        units: [{ original: '400g', grams: 400, confidenceLevel: 'high' }],
+      },
+      {
+        id: 'ing-pc-2', raw: '150g pancetta or guanciale, diced', name: 'pancetta',
+        quantity: 150, unit: 'g',
+        units: [{ original: '150g', grams: 150, confidenceLevel: 'high' }],
+      },
+      {
+        id: 'ing-pc-3', raw: '3 large eggs', name: 'eggs',
+        quantity: 3, unit: null,
+        units: [{ original: '3 large', grams: 150, confidenceLevel: 'high' }],
+      },
+      {
+        id: 'ing-pc-4', raw: '2 extra egg yolks', name: 'egg yolks',
+        quantity: 2, unit: null,
+        units: [{ original: '2 yolks', confidenceLevel: 'high' }],
+      },
+      {
+        id: 'ing-pc-5', raw: '80g Pecorino Romano or Parmesan, very finely grated', name: 'Pecorino Romano',
+        quantity: 80, unit: 'g',
+        units: [{ original: '80g', grams: 80, confidenceLevel: 'high' }],
+      },
+      {
+        id: 'ing-pc-6', raw: 'Generous amount of freshly cracked black pepper', name: 'black pepper',
+        quantity: null, unit: null,
+        units: [{ original: 'to taste', confidenceLevel: 'high' }],
+      },
+      {
+        id: 'ing-pc-7', raw: 'Salt, for the pasta water', name: 'salt',
+        quantity: null, unit: null,
+        units: [{ original: 'to taste', confidenceLevel: 'high' }],
+      },
+    ],
+    steps: [
+      {
+        id: 'step-pc-1', index: 1,
+        text: 'Bring a large pot of heavily salted water to a boil. Cook the pasta 1 minute short of the packet\'s al dente time — it will finish cooking in the sauce.',
+        timingMinutes: 10, isCritical: false,
+        annotations: [{ type: 'tip', text: 'The water should taste noticeably salty — about 1 tablespoon of salt per litre.' }],
+      },
+      {
+        id: 'step-pc-2', index: 2,
+        text: 'While the pasta cooks, whisk together the eggs, extra yolks, and grated cheese in a bowl until a thick, smooth paste forms. Season with a generous amount of black pepper.',
+        isCritical: false,
+        annotations: [{ type: 'technique', text: 'Mixing the eggs and cheese into a paste first means it will emulsify more evenly when it hits the hot pasta.' }],
+      },
+      {
+        id: 'step-pc-3', index: 3,
+        text: 'Cook the pancetta in a dry skillet over medium heat for 8 minutes until the fat renders and the pieces are lightly crisp. Remove from heat.',
+        timingMinutes: 8, isCritical: false, annotations: [],
+      },
+      {
+        id: 'step-pc-4', index: 4,
+        text: 'Before draining the pasta, scoop out at least 1 cup of the starchy cooking water and set it aside.',
+        isCritical: true,
+        criticalNote: 'The pasta water is essential — without it, the sauce will be too thick and won\'t coat the pasta properly.',
+        annotations: [],
+      },
+      {
+        id: 'step-pc-5', index: 5,
+        text: 'Drain the pasta and add it immediately to the pancetta pan, off the heat. Toss to coat in the rendered fat.',
+        timingMinutes: 1, isCritical: false, annotations: [],
+      },
+      {
+        id: 'step-pc-6', index: 6,
+        text: 'Pour the egg and cheese mixture over the hot pasta. Toss quickly and continuously, adding pasta water a small splash at a time, until you have a silky, creamy sauce that coats every strand.',
+        isCritical: true,
+        criticalNote: 'Never return the pan to direct heat after adding the eggs — they will scramble immediately. The residual heat from the pasta is exactly enough.',
+        annotations: [{ type: 'technique', text: 'Adding pasta water gradually controls the temperature and prevents the eggs from curdling. Toss fast and continuously.' }],
+      },
+      {
+        id: 'step-pc-7', index: 7,
+        text: 'Serve immediately in warm bowls. Top with extra black pepper and more grated cheese.',
+        isCritical: false, annotations: [],
+      },
+    ],
+    metadata: {
+      totalTimeMinutes: 25,
+      prepTimeMinutes: 5,
+      cookTimeMinutes: 20,
+      servings: '3–4',
+      cognitiveScore: 3,
     },
   },
 ]

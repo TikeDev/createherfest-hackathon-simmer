@@ -2,6 +2,8 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { getAllRecipes } from '@/storage/recipes'
 import { useRecipeFilters } from '@/hooks/useRecipeFilters'
+import { useProfile } from '@/hooks/useProfile'
+import { useSmartSuggestions } from '@/hooks/useSmartSuggestions'
 import RecipeToolbar from '@/components/recipes/RecipeToolbar'
 import RecipeCard from '@/components/recipes/RecipeCard'
 import { Icon } from '@/components/ui/icon'
@@ -24,6 +26,9 @@ export default function Home() {
 
   const [recipes, setRecipes] = useState<RecipeJSON[]>([])
   const [loading, setLoading] = useState(true)
+  const [showAll, setShowAll] = useState(false)
+
+  const { profile, loading: profileLoading } = useProfile()
 
   const searchRef = useRef<HTMLInputElement>(null)
   const liveRef = useRef<HTMLDivElement>(null)
@@ -34,6 +39,14 @@ export default function Home() {
       .then((all) => setRecipes(all))
       .finally(() => setLoading(false))
   }, [])
+
+  const { suggestions, loading: suggestionsLoading } = useSmartSuggestions(
+    hasSession ? session?.energy : null,
+    hasSession ? session?.note : null,
+    recipes,
+    profile,
+    profileLoading,
+  )
 
   const {
     query,
@@ -119,6 +132,55 @@ export default function Home() {
         </div>
       )}
 
+      {/* ── Suggestions section (session only) ───────────────── */}
+      {hasSession && (
+        <section aria-label="Recipe suggestions">
+          {suggestionsLoading && (
+            <p className="text-sm text-forest/60 dark:text-cream-text/60 animate-pulse" role="status">
+              Finding your best matches…
+            </p>
+          )}
+
+          {!suggestionsLoading && suggestions.length > 0 && (
+            <ul className="space-y-3">
+              {suggestions.map((s) => (
+                <RecipeCard key={s.recipe.id} recipe={s.recipe} reason={s.reason} />
+              ))}
+            </ul>
+          )}
+
+          {!suggestionsLoading && suggestions.length === 0 && !loading && totalCount > 0 && (
+            <p className="text-sm text-forest/60 dark:text-cream-text/60">
+              No recipes matched your energy level today.{' '}
+              <button
+                type="button"
+                onClick={() => setShowAll(true)}
+                className="text-sage underline hover:text-sage-dark"
+              >
+                Browse all recipes.
+              </button>
+            </p>
+          )}
+
+          {/* Toggle: show / hide full recipe list */}
+          {!loading && totalCount > 0 && (
+            <button
+              type="button"
+              onClick={() => setShowAll((v) => !v)}
+              className="mt-4 text-sm text-forest/50 hover:text-sage dark:text-cream-text/50 transition-colors"
+              aria-expanded={showAll}
+            >
+              {showAll
+                ? '↑ Hide all recipes'
+                : `↓ Show all ${totalCount} recipes`}
+            </button>
+          )}
+        </section>
+      )}
+
+      {/* ── Full recipe list ──────────────────────────────────── */}
+      {/* Always visible when there's no session; toggled when there is one */}
+
       {loading && (
         <p className="text-sm text-forest/60 dark:text-cream-text/60" role="status">
           Simmer is thinking...
@@ -137,7 +199,7 @@ export default function Home() {
         </div>
       )}
 
-      {!loading && totalCount > 0 && (
+      {!loading && totalCount > 0 && (!hasSession || showAll) && (
         <>
           {/* Search, sort, filter toolbar */}
           <RecipeToolbar
