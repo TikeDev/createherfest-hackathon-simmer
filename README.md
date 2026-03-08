@@ -1,5 +1,7 @@
 # Simmer 🍲
 
+**🔗 [Try the Live Demo](https://createherfest-hackathon-recipe-app.vercel.app/)**
+
 **A React PWA that helps people with physical, cognitive, or temporary limitations find and follow accessible recipes.**
 
 ---
@@ -43,7 +45,7 @@ Add your `VITE_OPENAI_API_KEY` to `.env`, then open **http://localhost:5173** in
 3. **Open a recipe in Playbook View** — Tap a recommendation → Step through the recipe with checkboxes, large text, and "Why this fits you" context.
 4. **Import a recipe** — Paste a URL or recipe text → Extraction agent parses it into structured format, available offline.
 
-**📹 Demo Video:** [Insert Link] | **🔗 Live Demo:** [Insert Link]
+**📹 Demo Video:** [Insert Link] | **🔗 Live Demo:** [createherfest-hackathon-recipe-app.vercel.app](https://createherfest-hackathon-recipe-app.vercel.app/)
 
 ---
 
