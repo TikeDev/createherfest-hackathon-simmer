@@ -48,7 +48,7 @@ Add your `VITE_OPENAI_API_KEY` to `.env`, then open **http://localhost:5173** in
 3. **Open a recipe in Playbook View** — Tap a recommendation → Step through the recipe with checkboxes, large text, and "Why this fits you" context.
 4. **Import a recipe** — Paste a URL or recipe text → Extraction agent parses it into structured format, available offline.
 
-**📹 Demo Video:** [Insert Link] | **🔗 Live Demo:** [createherfest-hackathon-recipe-app.vercel.app](https://createherfest-hackathon-recipe-app.vercel.app/)
+**📹 Demo Video:** [https://www.youtube.com/watch?v=5SIi_76ZiN8](https://www.youtube.com/watch?v=5SIi_76ZiN8) | **🔗 Live Demo:** [createherfest-hackathon-recipe-app.vercel.app](https://createherfest-hackathon-recipe-app.vercel.app/)
 
 ---
 
