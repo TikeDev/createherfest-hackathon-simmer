@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "@/components/ui/icon";
-import { Leaf, Sun, Zap } from "lucide-react";
+import { Leaf, Sun, Zap, Utensils, Calendar } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import type { Readiness } from "@/hooks/useRecipeFilters";
 
 const PLACEHOLDERS = [
   "tired but craving something warm and spicy...",
@@ -19,9 +20,15 @@ const ENERGY_OPTIONS: { value: EnergyLevel; icon: LucideIcon; label: string; col
   { value: "high", icon: Zap, label: "Feeling good", color: "text-orange-500" },
 ];
 
+const READINESS_OPTIONS: { value: Exclude<Readiness, "all">; icon: LucideIcon; label: string; color: string }[] = [
+  { value: "eat-soon", icon: Utensils, label: "Eat Soon", color: "text-orange-500" },
+  { value: "plan-ahead", icon: Calendar, label: "Plan Ahead", color: "text-sage" },
+];
+
 export default function Landing() {
   const navigate = useNavigate();
   const [energy, setEnergy] = useState<EnergyLevel | null>(null);
+  const [readiness, setReadiness] = useState<Exclude<Readiness, "all"> | null>(null);
   const [note, setNote] = useState("");
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
   const [placeholderVisible, setPlaceholderVisible] = useState(true);
@@ -43,11 +50,15 @@ export default function Landing() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!canSubmit) return;
-    void navigate("/recipes", { state: { energy, note: note.trim() } });
+    void navigate("/recipes", { state: { energy, readiness, note: note.trim() } });
   }
 
   function handleEnergyClick(value: EnergyLevel) {
     setEnergy((prev) => (prev === value ? null : value));
+  }
+
+  function handleReadinessClick(value: Exclude<Readiness, "all">) {
+    setReadiness((prev) => (prev === value ? null : value));
   }
 
   return (
@@ -75,6 +86,34 @@ export default function Landing() {
                     key={opt.value}
                     type="button"
                     onClick={() => handleEnergyClick(opt.value)}
+                    aria-pressed={selected}
+                    className={`flex-1 flex flex-col items-center gap-1.5 py-3 rounded-xl border-2 text-xs font-semibold transition-all duration-200 ${
+                      selected
+                        ? "border-sage bg-surface text-sage shadow-sm"
+                        : "border-mist-pale bg-surface text-forest/60 hover:border-mist hover:text-forest dark:text-cream-text/60 dark:border-forest dark:hover:border-mist dark:hover:text-cream"
+                    }`}
+                  >
+                    <Icon icon={opt.icon} size="lg" decorative className={opt.color} />
+                    <span>{opt.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
+
+          {/* Readiness toggle */}
+          <fieldset className="space-y-3">
+            <legend className="text-sm font-semibold text-forest dark:text-cream-text">
+              What's your timeline?
+            </legend>
+            <div className="flex gap-3" role="group">
+              {READINESS_OPTIONS.map((opt) => {
+                const selected = readiness === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => handleReadinessClick(opt.value)}
                     aria-pressed={selected}
                     className={`flex-1 flex flex-col items-center gap-1.5 py-3 rounded-xl border-2 text-xs font-semibold transition-all duration-200 ${
                       selected

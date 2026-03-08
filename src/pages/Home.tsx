@@ -7,10 +7,11 @@ import { useSmartSuggestions } from "@/hooks/useSmartSuggestions";
 import RecipeToolbar from "@/components/recipes/RecipeToolbar";
 import RecipeCard from "@/components/recipes/RecipeCard";
 import { Icon } from "@/components/ui/icon";
-import { Leaf, Sun, Zap } from "lucide-react";
+import { Leaf, Sun, Zap, Utensils, Calendar } from "lucide-react";
 import type { RecipeJSON } from "@/types/recipe";
 import type { EnergyLevel } from "./Landing";
 import type { LucideIcon } from "lucide-react";
+import type { Readiness } from "@/hooks/useRecipeFilters";
 
 const ENERGY_CONFIG: Record<EnergyLevel, { icon: LucideIcon; label: string; color: string }> = {
   low: { icon: Leaf, label: "Low energy", color: "text-sage" },
@@ -18,11 +19,16 @@ const ENERGY_CONFIG: Record<EnergyLevel, { icon: LucideIcon; label: string; colo
   high: { icon: Zap, label: "Feeling good", color: "text-orange-500" },
 };
 
+const READINESS_CONFIG: Record<Exclude<Readiness, "all">, { icon: LucideIcon; label: string; color: string }> = {
+  "eat-soon": { icon: Utensils, label: "Eat Soon", color: "text-orange-500" },
+  "plan-ahead": { icon: Calendar, label: "Plan Ahead", color: "text-sage" },
+};
+
 export default function Home() {
   const location = useLocation();
   const navigate = useNavigate();
-  const session = location.state as { energy?: EnergyLevel; note?: string } | null;
-  const hasSession = !!(session?.energy || session?.note);
+  const session = location.state as { energy?: EnergyLevel; readiness?: Exclude<Readiness, "all">; note?: string } | null;
+  const hasSession = !!(session?.energy || session?.readiness || session?.note);
 
   const [recipes, setRecipes] = useState<RecipeJSON[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,6 +68,13 @@ export default function Home() {
     availableDomains,
     hasActiveFilters,
   } = useRecipeFilters(recipes);
+
+  // Apply readiness filter from session state
+  useEffect(() => {
+    if (session?.readiness) {
+      setFilter("readiness", session.readiness);
+    }
+  }, [session?.readiness, setFilter]);
 
   // Debounced live region announcement
   const announce = useCallback((text: string) => {
@@ -118,6 +131,17 @@ export default function Home() {
                   className={`inline mr-1 ${ENERGY_CONFIG[session.energy].color}`}
                 />
                 {ENERGY_CONFIG[session.energy].label}
+              </span>
+            )}
+            {session?.readiness && (
+              <span className="rounded-full bg-surface border border-mist text-sage text-xs font-semibold px-3 py-1 dark:border-forest">
+                <Icon
+                  icon={READINESS_CONFIG[session.readiness].icon}
+                  size="sm"
+                  decorative
+                  className={`inline mr-1 ${READINESS_CONFIG[session.readiness].color}`}
+                />
+                {READINESS_CONFIG[session.readiness].label}
               </span>
             )}
             {session?.note && (
