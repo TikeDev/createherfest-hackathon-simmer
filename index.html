@@ -4,6 +4,49 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#1a2420" />
+    <meta name="theme-color" content="#faf4ef" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1a2420" media="(prefers-color-scheme: dark)" />
+    <script>
+      (() => {
+        const STORAGE_KEY = 'simmer-view-prefs';
+        const THEME_COLORS = {
+          light: '#faf4ef',
+          dark: '#1a2420',
+        };
+
+        const resolveTheme = (themePref) => {
+          if (themePref === 'light' || themePref === 'dark') return themePref;
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        };
+
+        let themePref = 'system';
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && (parsed.theme === 'light' || parsed.theme === 'dark' || parsed.theme === 'system')) {
+              themePref = parsed.theme;
+            }
+          }
+        } catch {
+          // Ignore malformed preference data.
+        }
+
+        const resolvedTheme = resolveTheme(themePref);
+        document.documentElement.setAttribute('data-theme', resolvedTheme);
+
+        let dynamicThemeMeta = document.querySelector('meta[name="theme-color"][data-app-theme="dynamic"]');
+        if (!dynamicThemeMeta) {
+          dynamicThemeMeta = document.createElement('meta');
+          dynamicThemeMeta.setAttribute('name', 'theme-color');
+          dynamicThemeMeta.setAttribute('data-app-theme', 'dynamic');
+          document.head.appendChild(dynamicThemeMeta);
+        }
+        dynamicThemeMeta.setAttribute('content', THEME_COLORS[resolvedTheme]);
+      })();
+    </script>
     <title>Simmer</title>
     <link href="https://fonts.googleapis.com/css2?family=Lora:wght@700&family=Nunito:wght@400;600&display=swap" rel="stylesheet">
   </head>

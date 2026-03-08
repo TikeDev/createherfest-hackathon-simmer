@@ -29,6 +29,11 @@ const STORAGE_KEY = "simmer-view-prefs";
 const FONT_SIZE_MIN = 14;
 const FONT_SIZE_MAX = 24;
 const OPENDYSLEXIC_HREF = "https://fonts.cdnfonts.com/css/opendyslexic";
+const THEME_COLORS: Record<"light" | "dark", string> = {
+  light: "#faf4ef",
+  dark: "#1a2420",
+};
+const DYNAMIC_THEME_META_SELECTOR = 'meta[name="theme-color"][data-app-theme="dynamic"]';
 
 function loadPrefs(): ViewPreferences {
   try {
@@ -51,6 +56,17 @@ function getSystemTheme(): "light" | "dark" {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
+function syncThemeColorMeta(resolvedTheme: "light" | "dark") {
+  let meta = document.querySelector<HTMLMetaElement>(DYNAMIC_THEME_META_SELECTOR);
+  if (!meta) {
+    meta = document.createElement("meta");
+    meta.name = "theme-color";
+    meta.setAttribute("data-app-theme", "dynamic");
+    document.head.appendChild(meta);
+  }
+  meta.content = THEME_COLORS[resolvedTheme];
+}
+
 function syncToDOM(prefs: ViewPreferences, resolvedTheme: "light" | "dark") {
   const el = document.documentElement;
 
@@ -71,6 +87,8 @@ function syncToDOM(prefs: ViewPreferences, resolvedTheme: "light" | "dark") {
 
   // Theme
   el.setAttribute("data-theme", resolvedTheme);
+  el.style.colorScheme = resolvedTheme;
+  syncThemeColorMeta(resolvedTheme);
 
   // Contrast
   if (prefs.contrastMode === "default") {
