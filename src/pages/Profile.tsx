@@ -469,7 +469,7 @@ export default function Profile() {
             </legend>
             <Select
               value={profile.alarmSoundId ?? "moderate"}
-              onValueChange={(value) => update({ alarmSoundId: value })}
+              onValueChange={(value) => update({ alarmSoundId: value ?? "moderate" })}
               disabled={profile.alarmEnabled === false}
             >
               <SelectTrigger id="alarm-sound" className="w-full">

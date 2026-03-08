@@ -1031,6 +1031,8 @@ function CookStage({
   const [alarmAudio, setAlarmAudio] = useState<AlarmPlayback | null>(null);
   const [showVisualAlarm, setShowVisualAlarm] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const alarmRequestIdRef = useRef(0);
+  const alarmTriggeredRef = useRef(false);
   const { profile } = useProfile();
   const step = steps[idx];
   const isLast = idx === steps.length - 1;
@@ -1048,21 +1050,6 @@ function CookStage({
           clearTimer();
           setTimerActive(false);
           setTimerDone(true);
-          const alarmSettings: AlarmSettings = {
-            alarmEnabled: profile?.alarmEnabled ?? true,
-            alarmSoundId: profile?.alarmSoundId,
-            alarmVolume: profile?.alarmVolume,
-            customAlarmUploaded: profile?.customAlarmUploaded,
-          };
-          // Trigger alarm when timer completes
-          if (alarmSettings.alarmEnabled !== false) {
-            void playAlarm(alarmSettings).then((audio) => {
-              setAlarmAudio(audio);
-            });
-            if (profile?.visualAlarmEnabled) {
-              setShowVisualAlarm(true);
-            }
-          }
           return 0;
         }
         return t - 1;
@@ -1072,6 +1059,7 @@ function CookStage({
 
   const startTimer = (seconds: number) => {
     dismissAlarm();
+    alarmTriggeredRef.current = false;
     setTimeLeft(seconds);
     setTimerActive(true);
     setTimerPaused(false);
@@ -1096,6 +1084,7 @@ function CookStage({
   };
 
   const dismissAlarm = () => {
+    alarmRequestIdRef.current += 1;
     stopAlarm(alarmAudio);
     setAlarmAudio(null);
     setShowVisualAlarm(false);
@@ -1103,12 +1092,46 @@ function CookStage({
 
   const resetTimerState = () => {
     clearTimer();
+    alarmTriggeredRef.current = false;
     setTimerActive(false);
     setTimerPaused(false);
     setTimerDone(false);
     setTimeLeft(null);
     dismissAlarm();
   };
+
+  useEffect(() => {
+    if (!timerDone || alarmTriggeredRef.current) {
+      return;
+    }
+
+    alarmTriggeredRef.current = true;
+
+    const alarmSettings: AlarmSettings = {
+      alarmEnabled: profile?.alarmEnabled ?? true,
+      alarmSoundId: profile?.alarmSoundId,
+      alarmVolume: profile?.alarmVolume,
+      customAlarmUploaded: profile?.customAlarmUploaded,
+    };
+
+    if (alarmSettings.alarmEnabled === false) {
+      return;
+    }
+
+    const requestId = ++alarmRequestIdRef.current;
+
+    if (profile?.visualAlarmEnabled) {
+      setShowVisualAlarm(true);
+    }
+
+    void playAlarm(alarmSettings).then((playback) => {
+      if (alarmRequestIdRef.current !== requestId) {
+        stopAlarm(playback);
+        return;
+      }
+      setAlarmAudio(playback);
+    });
+  }, [timerDone, profile]);
 
   // Reset timer when step changes
   useEffect(() => {
