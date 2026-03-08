@@ -236,7 +236,7 @@ const StageBar = ({ current, isCompact = false }: { current: Stage; isCompact?: 
               </div>
               <span
                 style={{
-                  fontSize: isCompact ? 13 : 14,
+                  fontSize: isCompact ? 14 : 16,
                   fontWeight: i === currentIdx ? 800 : 500,
                   whiteSpace: "nowrap",
                   color:
@@ -1304,7 +1304,7 @@ function ServeStage({
         maxWidth: 640,
         margin: "0 auto",
         textAlign: "center",
-        paddingTop: isMobile ? 20 : 48,
+        paddingTop: isMobile ? 8 : 16,
       }}
     >
       <div style={{ marginBottom: 20, display: "flex", justifyContent: "center" }}>
@@ -1331,11 +1331,11 @@ function ServeStage({
       {!submitted ? (
         <Card style={{ marginBottom: 28 }}>
           <div
-            style={{ fontSize: 18, fontWeight: 700, color: "var(--foreground)", marginBottom: 4 }}
+            style={{ fontSize: isMobile ? 20 : 22, fontWeight: 700, color: "var(--foreground)", marginBottom: 4 }}
           >
             How complex did this feel?
           </div>
-          <div style={{ fontSize: 13, color: "var(--muted-foreground)", marginBottom: 22 }}>
+          <div style={{ fontSize: 15, color: "var(--muted-foreground)", marginBottom: 22 }}>
             Your rating helps improve future matches
           </div>
           <div
@@ -1381,7 +1381,7 @@ function ServeStage({
             style={{
               display: "flex",
               justifyContent: "space-between",
-              fontSize: 12,
+              fontSize: 14,
               color: "var(--muted-foreground)",
               padding: "0 4px",
               marginBottom: 24,
@@ -1405,7 +1405,7 @@ function ServeStage({
           }}
         >
           <Icon icon={Leaf} size="lg" decorative className="text-sage mb-2" />
-          <div style={{ fontSize: 16, fontWeight: 700, color: "var(--color-sage)" }}>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "var(--color-sage)" }}>
             Thanks — rating saved
           </div>
         </Card>
@@ -1558,20 +1558,25 @@ export function CookingMode({ recipe, onComplete, onBack }: Props) {
           borderBottom: "1px solid var(--border)",
           padding: isMobile ? "0 14px" : "0 48px",
           height: 64,
-          display: "flex",
+          display: "grid",
+          gridTemplateColumns: "1fr auto 1fr",
+          columnGap: isMobile ? 8 : 12,
           alignItems: "center",
-          justifyContent: "space-between",
           position: "sticky",
           top: 0,
           zIndex: 100,
           boxShadow: "0 1px 8px rgba(45,59,53,0.06)",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <Icon icon={Leaf} size="lg" decorative className="text-sage" />
+        <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0, justifySelf: "start" }}>
+          <img
+            src="/simmer-logo-192.png"
+            alt="Simmer logo"
+            style={{ width: 34, height: 34, objectFit: "contain" }}
+          />
           <span
             style={{
-              fontSize: isMobile ? 18 : 20,
+              fontSize: isMobile ? 20 : 22,
               fontWeight: 900,
               color: "var(--foreground)",
               fontFamily: "'Lora', Georgia, serif",
@@ -1580,7 +1585,24 @@ export function CookingMode({ recipe, onComplete, onBack }: Props) {
             Simmer
           </span>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <span
+          style={{
+            justifySelf: "center",
+            fontSize: isMobile ? 15 : 18,
+            fontWeight: 700,
+            color: "var(--muted-foreground)",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            maxWidth: isMobile ? 170 : 500,
+            minWidth: 0,
+            textAlign: "center",
+          }}
+          title={recipe.title}
+        >
+          {recipe.title}
+        </span>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, justifySelf: "end" }}>
           <ThemeToggle compact />
           <button
             onClick={onBack}
@@ -1610,7 +1632,7 @@ export function CookingMode({ recipe, onComplete, onBack }: Props) {
         style={{
           maxWidth: 1060,
           margin: "0 auto",
-          padding: isMobile ? "24px 16px 48px" : "44px 48px 80px",
+          padding: isMobile ? "16px 16px 48px" : "24px 48px 80px",
         }}
       >
         {stageContent[stage]}
