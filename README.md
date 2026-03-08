@@ -1,3 +1,22 @@
+# Simmer 🍲
+
+**A React PWA that helps people with physical, cognitive, or temporary limitations find and follow accessible recipes.**
+
+---
+
+## 🧩 Problem Frame
+
+| | |
+| :---- | :---- |
+| **User** | Individuals with executive functioning challenges who love to cook but want recipes that adapt to their brain's contradictory need for novelty while also providing a structure that simplifies cooking |
+| **Problem** | Choosing recipes according to their changing level of energy/focus and following recipes with complex asynchronous steps |
+| **Constraints** | Time and budget |
+| **Success Test** | Pick a recipe according to energy level and successfully go through all recipe's steps sequentially with the ability to navigate back and forth between steps, with the current step in view while all others are hidden |
+
+---
+
+## ✨ Key Features
+
 - **Soft scoring & explainability:** Remaining recipes are ranked by time fit, energy fit, appliance fit, sensory match, and cleanup burden. Every recommendation shows "Why this fits you."
 - **AI extraction agent:** Imports any recipe URL or pasted text into a structured, offline-capable format using gpt-5-nano with function calling.
 - **Playbook View:** Step-checkable cooking mode with large text and minimal distraction — designed for use while cooking with limited attention.
@@ -12,7 +31,7 @@
 **Requirements:** Node 18+, pnpm, OpenAI API key.
 
 ```bash
-git clone https://github.com/[your-repo] simmer && cd simmer && cp .env.example .env && pnpm install && pnpm dev
+git clone https://github.com/TikeDev/createherfest-hackathon-simmer simmer && cd simmer && cp .env.example .env && pnpm install && pnpm dev
 ```
 
 Add your `VITE_OPENAI_API_KEY` to `.env`, then open **http://localhost:5173** in your browser.
@@ -74,9 +93,9 @@ Add your `VITE_OPENAI_API_KEY` to `.env`, then open **http://localhost:5173** in
 
 | Name | Role | GitHub | LinkedIn |
 | :---- | :---- | :---- | :---- |
-| [Kerline Moncy] | [Role] | [@username] | [Profile Link] |
-| [Paula Wass Berner] | [Role] | [@username] | [Profile Link] |
-| [Rahul Basu] | [Role] | [@username] | [Profile Link] |
+| Kerline Moncy | Lead Developer and DevOps Engineer | [@TikeDev] | https://www.linkedin.com/in/kerline-moncy/ |
+| Paula Bass Werner | Technical Product Manager | [@pbasswerner] | https://www.linkedin.com/in/paula-bass-werner/ |
+| Rahul Basu | System Architecture and AI Consultant | [@EruditeStranger] | https://www.linkedin.com/in/rahul-basu-238a18100/ |
 
 **Special thanks to:** CreateHER Fest and the #75HER Challenge organizers.
 
