@@ -1,4 +1,4 @@
-import type { SortField, TimeRange, Complexity, FilterState } from '@/hooks/useRecipeFilters'
+import type { SortField, TimeRange, Complexity, Readiness, FilterState } from '@/hooks/useRecipeFilters'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -36,6 +36,12 @@ const COMPLEXITY_OPTIONS: { value: Complexity; label: string }[] = [
   { value: 'complex', label: 'Complex (16+)' },
 ]
 
+const READINESS_OPTIONS: { value: Readiness; label: string }[] = [
+  { value: 'all', label: 'Any readiness' },
+  { value: 'eat-soon', label: '🍽️ Eat Soon (≤45 min)' },
+  { value: 'plan-ahead', label: '📅 Plan Ahead (2+ hrs)' },
+]
+
 const TIME_CHIP_LABELS: Record<TimeRange, string> = {
   all: '',
   quick: '≤30 min',
@@ -48,6 +54,12 @@ const COMPLEXITY_CHIP_LABELS: Record<Complexity, string> = {
   simple: 'Simple',
   moderate: 'Moderate',
   complex: 'Complex',
+}
+
+const READINESS_CHIP_LABELS: Record<Readiness, string> = {
+  all: '',
+  'eat-soon': 'Eat Soon',
+  'plan-ahead': 'Plan Ahead',
 }
 
 interface RecipeToolbarProps {
@@ -150,6 +162,18 @@ export default function RecipeToolbar({
           </SelectContent>
         </Select>
 
+        <label htmlFor="filter-readiness" className="sr-only">Filter by readiness</label>
+        <Select value={filters.readiness} onValueChange={(v) => onFilterChange('readiness', v as Readiness)}>
+          <SelectTrigger id="filter-readiness" size="sm" className="text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {READINESS_OPTIONS.map((o) => (
+              <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
         {availableDomains.length > 1 && (
           <>
             <label htmlFor="filter-source" className="sr-only">Filter by source</label>
@@ -182,6 +206,9 @@ export default function RecipeToolbar({
           )}
           {filters.complexity !== 'all' && (
             <Chip label={COMPLEXITY_CHIP_LABELS[filters.complexity]} onDismiss={() => onFilterChange('complexity', 'all')} />
+          )}
+          {filters.readiness !== 'all' && (
+            <Chip label={READINESS_CHIP_LABELS[filters.readiness]} onDismiss={() => onFilterChange('readiness', 'all')} />
           )}
           {filters.sourceDomain && (
             <Chip label={filters.sourceDomain} onDismiss={() => onFilterChange('sourceDomain', null)} />

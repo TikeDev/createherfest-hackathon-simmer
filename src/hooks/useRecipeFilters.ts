@@ -15,17 +15,20 @@ export type SortField =
 
 export type TimeRange = 'all' | 'quick' | 'medium' | 'long'
 export type Complexity = 'all' | 'simple' | 'moderate' | 'complex'
+export type Readiness = 'all' | 'eat-soon' | 'plan-ahead'
 
 export interface FilterState {
   timeRange: TimeRange
   complexity: Complexity
   sourceDomain: string | null
+  readiness: Readiness
 }
 
 const DEFAULT_FILTERS: FilterState = {
   timeRange: 'all',
   complexity: 'all',
   sourceDomain: null,
+  readiness: 'all',
 }
 
 function matchesSearch(recipe: RecipeJSON, query: string): boolean {
@@ -55,6 +58,13 @@ function matchesFilters(recipe: RecipeJSON, filters: FilterState): boolean {
 
   // Source domain filter
   if (filters.sourceDomain && recipe.sourceDomain !== filters.sourceDomain) return false
+
+  // Readiness filter — "Eat Soon" vs "Plan Ahead"
+  if (filters.readiness !== 'all' && recipe.metadata.totalTimeMinutes != null) {
+    const t = recipe.metadata.totalTimeMinutes
+    if (filters.readiness === 'eat-soon' && t > 45) return false
+    if (filters.readiness === 'plan-ahead' && t <= 120) return false
+  }
 
   return true
 }
@@ -126,7 +136,8 @@ export function useRecipeFilters(recipes: RecipeJSON[]) {
     sortField !== 'date-newest' ||
     filters.timeRange !== 'all' ||
     filters.complexity !== 'all' ||
-    filters.sourceDomain !== null
+    filters.sourceDomain !== null ||
+    filters.readiness !== 'all'
 
   return {
     query,
