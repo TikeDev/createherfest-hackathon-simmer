@@ -39,6 +39,7 @@
 | Operational | CORS proxy unreliable — recipe URL extraction failing intermittently due to CORS rejections and agent loop not recovering gracefully | 🟠 Major | Hardened CORS proxy headers in `api/scrape_recipe.py`; added retry logic and better error messages in agent loop | [2d208c6](https://github.com/TikeDev/createherfest-hackathon-simmer/commit/2d208c6) | ✅ Fixed |
 | Operational | CI pipeline failing — GitHub Actions couldn't resolve pnpm version, causing `pnpm install` to fail on every push | 🟠 Major | Added `packageManager` field to `package.json` and upgraded to pnpm v10 | [e90bdab](https://github.com/TikeDev/createherfest-hackathon-simmer/commit/e90bdab) | ✅ Fixed |
 | AI Integration | gpt-5-nano temperature locked at 1 — discovered OpenAI removed temperature control for this model; higher randomness than ideal for structured extraction | 🟡 Minor | Accepted as model constraint; mitigated by strict system prompt and Zod validation on output | [recipeAgent.ts](https://github.com/TikeDev/createherfest-hackathon-simmer/blob/main/src/agent/recipeAgent.ts) | ⚠️ Accepted |
+| Feature Scope | URL-based recipe extraction unreliable — CORS restrictions, paywalled content, and heavily formatted recipe pages cause frequent extraction failures. Feature not fully built out due to time constraints. | 🟡 Minor | Accepted as MVP limitation. Workaround: users can paste recipe text directly into the extraction agent, which works reliably. URL extraction marked as experimental. | `src/pages/Extract.tsx` | ⚠️ Accepted |
 
 ---
 
