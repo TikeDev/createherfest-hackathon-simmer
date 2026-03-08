@@ -93,9 +93,9 @@ Add your `VITE_OPENAI_API_KEY` to `.env`, then open **http://localhost:5173** in
 
 | Name | Role | GitHub | LinkedIn |
 | :---- | :---- | :---- | :---- |
-| Kerline Moncy | Lead Developer and DevOps Engineer | [@TikeDev] | https://www.linkedin.com/in/kerline-moncy/ |
-| Paula Bass Werner | Technical Product Manager | [@pbasswerner] | https://www.linkedin.com/in/paula-bass-werner/ |
-| Rahul Basu | System Architecture and AI Consultant | [@EruditeStranger] | https://www.linkedin.com/in/rahul-basu-238a18100/ |
+| Kerline Moncy | Lead Developer and DevOps Engineer | @TikeDev | https://www.linkedin.com/in/kerline-moncy/ |
+| Paula Bass Werner | Technical Product Manager | @pbasswerner | https://www.linkedin.com/in/paula-bass-werner/ |
+| Rahul Basu | System Architecture and AI Consultant | @EruditeStranger | https://www.linkedin.com/in/rahul-basu-238a18100/ |
 
 **Special thanks to:** CreateHER Fest and the #75HER Challenge organizers.
 
