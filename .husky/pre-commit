@@ -1,3 +1,19 @@
-pnpm exec lint-staged
-pnpm exec tsc --noEmit
-pnpm build
+run_pnpm() {
+  if command -v pnpm >/dev/null 2>&1; then
+    pnpm "$@"
+    return $?
+  fi
+
+  if command -v corepack >/dev/null 2>&1; then
+    corepack pnpm "$@"
+    return $?
+  fi
+
+  echo "Error: pnpm not found and corepack is unavailable." >&2
+  echo "Install pnpm or enable corepack to run git hooks." >&2
+  return 127
+}
+
+run_pnpm exec lint-staged
+run_pnpm exec tsc --noEmit
+run_pnpm build
