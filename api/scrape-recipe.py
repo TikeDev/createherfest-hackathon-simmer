@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse
 
@@ -85,6 +86,10 @@ def _safe_call(fn, default=None):
         return default
 
 
+def _log(msg: str) -> None:
+    print(f"[scrape-recipe] {msg}", file=sys.stderr, flush=True)
+
+
 class handler(BaseHTTPRequestHandler):  # noqa: N801
     def do_OPTIONS(self):
         self.send_response(204)
@@ -143,6 +148,8 @@ class handler(BaseHTTPRequestHandler):  # noqa: N801
             _json_response(self, 400, {"error": "Missing required field: url"})
             return
 
+        _log(f"POST url={url}")
+
         # Validate protocol
         parsed = urlparse(url)
         if parsed.scheme not in ("http", "https"):
@@ -170,6 +177,7 @@ class handler(BaseHTTPRequestHandler):  # noqa: N801
             return
 
         proxies = {"http": http_proxy, "https": https_proxy}
+        _log("fetching via curl_cffi through proxy")
 
         # Cloudflare fingerprints the TLS handshake, so browser-like headers
         # alone still get a 403 - plain requests fails every attempt on those
@@ -188,11 +196,13 @@ class handler(BaseHTTPRequestHandler):  # noqa: N801
                     timeout=30,
                 )
                 if resp.status_code == 200:
+                    _log(f"attempt {_attempt + 1}/{FETCH_ATTEMPTS}: ok")
                     break
                 last_error = f"HTTP {resp.status_code}"
                 resp = None
             except Exception as e:  # curl_cffi raises its own error hierarchy
                 last_error = str(e) or type(e).__name__
+            _log(f"attempt {_attempt + 1}/{FETCH_ATTEMPTS}: {last_error}")
 
         html = resp.text if resp is not None else None
 
@@ -201,9 +211,12 @@ class handler(BaseHTTPRequestHandler):  # noqa: N801
         if html is None:
             firecrawl_key = os.environ.get("FIRECRAWL_API_KEY")
             if firecrawl_key:
+                _log("curl_cffi exhausted, trying Firecrawl")
                 html = _fetch_via_firecrawl(url, firecrawl_key)
+                _log(f"Firecrawl {'returned HTML' if html else 'failed'}")
 
         if not html:
+            _log(f"fetch failed: {last_error}")
             host = parsed.netloc.replace("www.", "") or "this site"
             _json_response(
                 self,
@@ -258,6 +271,12 @@ class handler(BaseHTTPRequestHandler):  # noqa: N801
         # scraper that breaks upstream (simplyrecipes raises AttributeError
         # on instructions, which _safe_call turns into an empty list).
         # A recipe missing either half is not usable, so require both.
+        _log(
+            f"scraped title={result['title']!r} "
+            f"ingredients={len(result['ingredients'])} "
+            f"steps={len(result['instructions_list'])}"
+        )
+
         if not result["ingredients"] or not result["instructions_list"]:
             _json_response(
                 self,
@@ -271,6 +290,7 @@ class handler(BaseHTTPRequestHandler):  # noqa: N801
             )
             return
 
+        _log("200 OK")
         _json_response(self, 200, result)
 
     def log_message(self, format, *args):  # noqa: A002
