@@ -6,6 +6,27 @@
 
 <img src="simmer-demo-opt.gif" width="400" alt="Simmer Demo GIF"/>
 
+## Table of Contents
+
+- [Problem Frame](#problem-frame)
+- [Key Features](#key-features)
+- [Quick Start & Demo Path](#quick-start-demo-path)
+  - [Requirements](#requirements)
+  - [Installation](#installation)
+  - [Environment variables](#environment-variables)
+  - [Dev server commands](#dev-server-commands)
+  - [Other commands](#other-commands)
+  - [Troubleshooting](#troubleshooting)
+  - [60-Second Demo Path](#60-second-demo-path)
+- [Technical Architecture](#️-technical-architecture)
+  - [goose Integration (AI/ML Track)](#goose-integration-aiml-track)
+- [Project Logs & Documentation](#project-logs-documentation)
+- [Testing & Known Issues](#testing-known-issues)
+- [Team & Acknowledgments](#team-acknowledgments)
+- [License & Attributions](#license-attributions)
+
+---
+
 ## 🧩 Problem Frame
 
 | **User** | Individuals with executive functioning challenges who love to cook but want recipes that adapt to their brain's contradictory need for novelty while also providing a structure that simplifies cooking
@@ -31,15 +52,84 @@
 
 **[Live Deployment](https://createherfest-hackathon-recipe-app.vercel.app/)** (mobile friendly)
 
-### Installation (1 Command)
+### Requirements
 
-**Requirements:** Node 18+, pnpm, OpenAI API key.
+| Tool | Version | Needed for |
+|------|---------|-----------|
+| Node | 18+ | App and the OpenAI proxy function |
+| pnpm | 10+ | Package management |
+| Python | 3.12 | The recipe URL scraper (`api/scrape-recipe.py`) |
+
+You will also need an **OpenAI API key**. Importing recipes *by URL* additionally
+needs HTTP proxy credentials. See [Environment variables](#environment-variables).
+
+### Installation
 
 ```bash
-git clone https://github.com/TikeDev/createherfest-hackathon-simmer simmer && cd simmer && cp .env.example .env && pnpm install && pnpm dev
+# 1. Clone and install
+git clone https://github.com/TikeDev/createherfest-hackathon-simmer simmer
+cd simmer
+pnpm install
+
+# 2. Install the Python scraper dependencies
+pnpm setup:python
+
+# 3. Create your env file, then fill it in (see the table below)
+cp .env.example .env
+
+# 4. Start both dev servers
+pnpm dev:full
 ```
 
-Add your `VITE_OPENAI_API_KEY` to `.env`, then open **http://localhost:5173** in your browser.
+Then open **http://localhost:5173**.
+
+> Fill in `.env` **before** running `pnpm dev:full`. The API server reads it at
+> startup, so changing `.env` later means restarting it.
+
+### Environment variables
+
+| Variable | Required | Purpose |
+|----------|----------|---------|
+| `OPENAI_API_KEY` | Yes | All AI features. Read **server-side only**, never exposed to the browser. |
+| `PROXY_HTTP_URL` | For URL import | Recipe sites return 403 to datacenter IPs, so fetches go through a rotating residential proxy. |
+| `PROXY_HTTPS_URL` | For URL import | Same proxy; both use an `http://` scheme. |
+| `FIRECRAWL_API_KEY` | No | Optional last-resort fallback if the primary scraper fails. |
+| `VITE_API_BASE` | No | Overrides the `/api` base URL. Leave unset for local dev. |
+
+Without the proxy variables the app still runs. Pasting recipe *text* works, but
+importing by *URL* returns a 500 explaining the proxy is missing.
+
+### Dev server commands
+
+| Command | What it starts | Use when |
+|---------|----------------|----------|
+| `pnpm dev:full` | Vite (5173) + API server (5174) | **Default.** Anything involving AI or recipe import. |
+| `pnpm dev` | Vite only (5173) | UI-only work. All `/api` calls will 404. |
+| `pnpm dev:browser` | `dev:full` + launches Chrome Beta | Debugging with DevTools. |
+
+`pnpm dev` alone is not enough for the AI features: the OpenAI key lives server-side,
+so the browser calls a same-origin `/api/openai-chat` function that only exists under
+`dev:full`. Vite proxies `/api` to port 5174.
+
+### Other commands
+
+```bash
+pnpm build      # Production build (tsc + vite)
+pnpm preview    # Preview the production build
+pnpm test       # Unit tests (vitest)
+pnpm lint       # ESLint + stylelint
+pnpm lint:py    # ruff, for the Python scraper
+```
+
+### Troubleshooting
+
+| Symptom | Cause and fix |
+|---------|---------------|
+| `/api/*` returns 404 | You ran `pnpm dev` instead of `pnpm dev:full`. |
+| `OPENAI_API_KEY is not set on the server.` | Missing or misnamed key in `.env`. It must **not** have a `VITE_` prefix. Restart the API server after editing. |
+| `Server is missing PROXY_HTTP_URL / PROXY_HTTPS_URL` | URL import needs proxy credentials. Paste recipe text instead, or add them. |
+| Port 5173 or 5174 already in use | A previous dev server is still running: `lsof -ti:5173,5174 \| xargs kill` |
+| Scraper fails to import | Some sites bot-block aggressively. `bbcgoodfood.com` is reliable for testing. |
 
 ### 60-Second Demo Path
 

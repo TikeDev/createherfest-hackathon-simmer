@@ -1,19 +1,23 @@
-import OpenAI from 'openai'
-import type { Ingredient, GroceryCategory } from '@/types/recipe'
-
-const client = new OpenAI({
-  apiKey: import.meta.env.VITE_OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true,
-})
+import { createChatCompletion } from "./openaiClient";
+import type { Ingredient, GroceryCategory } from "@/types/recipe";
 
 const CATEGORIES: GroceryCategory[] = [
-  'Produce', 'Protein', 'Dairy', 'Pantry', 'Spices & Seasonings',
-  'Oils & Vinegars', 'Canned & Jarred', 'Frozen', 'Bakery', 'Beverages', 'Other',
-]
+  "Produce",
+  "Protein",
+  "Dairy",
+  "Pantry",
+  "Spices & Seasonings",
+  "Oils & Vinegars",
+  "Canned & Jarred",
+  "Frozen",
+  "Bakery",
+  "Beverages",
+  "Other",
+];
 
 const SYSTEM_PROMPT = `You are a grocery categorization assistant. Given a numbered list of ingredients, assign each one a category.
 
-Categories: ${CATEGORIES.join(', ')}
+Categories: ${CATEGORIES.join(", ")}
 
 Rules:
 - Produce: fresh fruits, vegetables, herbs
@@ -29,31 +33,29 @@ Rules:
 - Other: anything that doesn't fit above
 
 Respond with ONLY a JSON object like this — numeric index as key, category as value:
-{"0":"Produce","1":"Dairy","2":"Pantry"}`
+{"0":"Produce","1":"Dairy","2":"Pantry"}`;
 
 export async function classifyGroceries(
-  ingredients: Ingredient[],
+  ingredients: Ingredient[]
 ): Promise<Record<string, GroceryCategory>> {
-  if (ingredients.length === 0) return {}
+  if (ingredients.length === 0) return {};
 
   // Use numeric indices as keys — the LLM handles these reliably
-  const ingredientList = ingredients
-    .map((ing, i) => `${i}: ${ing.name}`)
-    .join('\n')
+  const ingredientList = ingredients.map((ing, i) => `${i}: ${ing.name}`).join("\n");
 
-  const response = await client.chat.completions.create({
-    model: 'gpt-5-nano',
+  const response = await createChatCompletion({
+    model: "gpt-5-nano",
     messages: [
-      { role: 'system', content: SYSTEM_PROMPT },
-      { role: 'user', content: ingredientList },
+      { role: "system", content: SYSTEM_PROMPT },
+      { role: "user", content: ingredientList },
     ],
-  })
+  });
 
-  const raw = response.choices[0]?.message?.content ?? '{}'
+  const raw = response.choices[0]?.message?.content ?? "{}";
 
   // Strip markdown code fences if the model wraps the response
-  const cleaned = raw.replace(/```(?:json)?\n?/g, '').trim()
-  const parsed = JSON.parse(cleaned) as Record<string, string>
+  const cleaned = raw.replace(/```(?:json)?\n?/g, "").trim();
+  const parsed = JSON.parse(cleaned) as Record<string, string>;
 
   // Map index → ingredient id, validate each category
   return Object.fromEntries(
@@ -61,7 +63,7 @@ export async function classifyGroceries(
       ing.id,
       (CATEGORIES.includes(parsed[String(i)] as GroceryCategory)
         ? parsed[String(i)]
-        : 'Other') as GroceryCategory,
-    ]),
-  )
+        : "Other") as GroceryCategory,
+    ])
+  );
 }

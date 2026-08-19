@@ -3,9 +3,9 @@
 
 ## Project Overview
 
-**Simmer** — A React PWA built for the CreateHerFest Hackathon (deadline: March 7, 2026) that helps users with temporary, chronic, or permanent physical/cognitive limitations find and follow accessible recipes.
+**Simmer** — A React PWA built for the CreateHerFest Hackathon that helps users with temporary, chronic, or permanent physical/cognitive limitations find and follow accessible recipes.
 
-**Status:** Feature-complete MVP — extraction agent, recommendation engine, cooking mode with timer alarms, and profile all built. Deadline: March 7, 2026.
+**Status:** Feature-complete MVP — extraction agent, recommendation engine, cooking mode with timer alarms, and profile all built.
 
 ## Tech Stack
 

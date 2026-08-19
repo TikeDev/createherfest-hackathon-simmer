@@ -12,12 +12,12 @@
  * recipes that are safe for this user.
  *
  * Falls back to the pure suggestRecipes function if:
- *   - VITE_OPENAI_API_KEY is not set
+ *   - the /api/openai-chat proxy fails (e.g. OPENAI_API_KEY unset server-side)
  *   - The API call fails (offline, rate limit, parse error)
  * ─────────────────────────────────────────────────────────────
  */
 
-import OpenAI from "openai";
+import { createChatCompletion } from "./openaiClient";
 import type { RecipeJSON } from "@/types/recipe";
 import type { UserProfile } from "@/types/profile";
 import { hardFilterRecipes, suggestRecipes } from "@/lib/suggestRecipes";
@@ -80,14 +80,10 @@ export async function runSuggestionAgent(
 
   if (filtered.length === 0) return [];
 
-  const apiKey = import.meta.env.VITE_OPENAI_API_KEY as string | undefined;
-  if (!apiKey) throw new Error("VITE_OPENAI_API_KEY not set");
-
   // Step 2 — single structured-output LLM call
   const energyLabels: Record<1 | 2 | 3, string> = { 1: "low", 2: "medium", 3: "high" };
-  const client = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
 
-  const response = await client.chat.completions.create({
+  const response = await createChatCompletion({
     model: "gpt-5-nano",
     max_completion_tokens: 2000,
     messages: [
@@ -124,7 +120,7 @@ export async function runSuggestionAgent(
 
 /**
  * Tries the LLM agent, falls back to the pure suggestRecipes function when:
- *   - VITE_OPENAI_API_KEY is not set
+ *   - the /api/openai-chat proxy fails (e.g. OPENAI_API_KEY unset server-side)
  *   - The API call fails (offline, rate limit, parse error)
  *   - The agent returns empty results — e.g. it hallucinated or mangled recipe
  *     IDs so all candidates failed ID validation. This is common with small

@@ -1,5 +1,6 @@
-import OpenAI from "openai";
+import type OpenAI from "openai";
 import { randomUUID } from "@/lib/uuid";
+import { createChatCompletion } from "./openaiClient";
 import { toolDefinitions, toOpenAITools } from "./toolDefinitions";
 import { extractPreamble } from "./tools/extractPreamble";
 import { parseIngredients } from "./tools/parseIngredients";
@@ -155,13 +156,6 @@ export interface RunAgentOptions {
 
 export async function runRecipeAgent(options: RunAgentOptions): Promise<RecipeJSON> {
   const { recipeText, sourceUrl, onProgress } = options;
-  const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
-
-  if (!apiKey) {
-    throw new Error("VITE_OPENAI_API_KEY is not set.");
-  }
-
-  const client = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
   const messages = buildInitialMessages(recipeText, sourceUrl);
   const openAITools = toOpenAITools(toolDefinitions.filter((t) => t.name !== "validate_output"));
 
@@ -171,7 +165,7 @@ export async function runRecipeAgent(options: RunAgentOptions): Promise<RecipeJS
     iterations++;
     onProgress?.(`[iter ${iterations}] Calling model...`);
 
-    const response = await client.chat.completions.create({
+    const response = await createChatCompletion({
       model: "gpt-5-nano",
       messages,
       tools: openAITools,
