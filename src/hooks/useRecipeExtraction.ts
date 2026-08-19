@@ -25,6 +25,27 @@ const STEP_LABELS = {
   done: "Done!",
 };
 
+const TOOL_LABELS: Record<string, string> = {
+  extract_preamble: "Pulling out tips and notes...",
+  parse_ingredients: "Reading the ingredient list...",
+  extract_steps: "Reading the instructions...",
+  convert_volume_to_weight: "Converting measurements...",
+  convert_weight_to_volume: "Converting measurements...",
+};
+
+function friendlyAgentProgress(rawStep: string): string {
+  if (import.meta.env.DEV) return rawStep;
+
+  if (rawStep.includes("Calling model...")) return "Reading through the recipe...";
+  if (rawStep.includes("Model stopped.")) return "Double-checking the recipe...";
+  if (rawStep.includes("Parsing final recipe JSON...")) return "Almost done...";
+
+  const toolMatch = rawStep.match(/(?:Tool: |✓ )(\w+)/);
+  if (toolMatch) return TOOL_LABELS[toolMatch[1]] ?? "Working on it...";
+
+  return "Working on it...";
+}
+
 export function useRecipeExtraction(): UseRecipeExtractionReturn {
   const [status, setStatus] = useState<ExtractionStatus>("idle");
   const [progress, setProgress] = useState<ExtractionProgress>({ step: "", completed: [] });
@@ -68,7 +89,7 @@ export function useRecipeExtraction(): UseRecipeExtractionReturn {
           recipeText,
           sourceUrl,
           onProgress: (step) => {
-            setProgress((prev) => ({ ...prev, step }));
+            setProgress((prev) => ({ ...prev, step: friendlyAgentProgress(step) }));
           },
         });
 
