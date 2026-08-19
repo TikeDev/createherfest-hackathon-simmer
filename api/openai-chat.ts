@@ -22,6 +22,31 @@ function jsonError(res: VercelResponse, status: number, error: string, details?:
   res.status(status).json(details === undefined ? { error } : { error, details });
 }
 
+/**
+ * NOTE: this is a copy of redactSecrets in src/lib/redact.ts. This file is a
+ * Vercel function outside the Vite build and cannot import from src/, so the
+ * two must be kept in sync. The tests live next to the original.
+ */
+const API_KEY_RE = /\b(?:sk|pk|rk)-[A-Za-z0-9_-]*[A-Za-z0-9_*•·-]{8,}/g;
+const BEARER_RE = /\bBearer\s+[A-Za-z0-9._\-*•]{8,}/gi;
+const LONG_TOKEN_RE = /\b[A-Za-z0-9_-]{32,}\b/g;
+
+function redactSecrets(input: string): string {
+  return input
+    .replace(API_KEY_RE, "[redacted]")
+    .replace(BEARER_RE, "Bearer [redacted]")
+    .replace(LONG_TOKEN_RE, "[redacted]");
+}
+
+// This endpoint is public, so upstream prose never goes out verbatim. The
+// client classifies on the HTTP status, not on this wording.
+function upstreamMessage(status: number): string {
+  if (status === 401 || status === 403) return "The recipe service rejected this request.";
+  if (status === 429) return "The recipe service is rate limited.";
+  if (status >= 500) return "The recipe service is unavailable.";
+  return "The recipe request failed.";
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === "OPTIONS") {
     applyCors(res);
@@ -69,10 +94,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } catch (e) {
     if (e instanceof OpenAI.APIError) {
       const status = typeof e.status === "number" ? e.status : 502;
-      jsonError(res, status, `OpenAI request failed: ${e.message}`);
+      jsonError(res, status, upstreamMessage(status), redactSecrets(e.message));
       return;
     }
     const message = e instanceof Error ? e.message : String(e);
-    jsonError(res, 502, `OpenAI request failed: ${message}`);
+    jsonError(res, 502, upstreamMessage(502), redactSecrets(message));
   }
 }

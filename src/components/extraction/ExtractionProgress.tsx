@@ -1,11 +1,12 @@
 import type { ExtractionStatus, ExtractionProgress } from "@/types/agent";
+import type { FriendlyError } from "@/lib/errors";
 import { Icon } from "@/components/ui/icon";
 import { Check } from "lucide-react";
 
 interface ExtractionProgressProps {
   status: ExtractionStatus;
   progress: ExtractionProgress;
-  error: string | null;
+  error: FriendlyError | null;
 }
 
 export function ExtractionProgressDisplay({ status, progress, error }: ExtractionProgressProps) {
@@ -41,10 +42,26 @@ export function ExtractionProgressDisplay({ status, progress, error }: Extractio
         )}
       </ul>
 
+      {/* No role="alert" here: the container is already an aria-live region,
+          and nesting an assertive region inside a polite one is undefined
+          across screen readers. */}
       {status === "error" && error && (
-        <p role="alert" className="text-sm text-[#B85C00] mt-2">
-          {error}
-        </p>
+        <div className="mt-2 space-y-2">
+          <p className="text-sm text-[#B85C00]">{error.friendly}</p>
+
+          {error.technical && (
+            <details className="text-xs text-forest/60">
+              <summary className="cursor-pointer select-none rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage">
+                Technical details
+              </summary>
+              {/* break-all, not break-words: the upstream text can be one
+                  unbroken token with no break opportunities. */}
+              <p className="mt-1 font-mono break-all whitespace-pre-wrap text-forest/70">
+                {error.technical}
+              </p>
+            </details>
+          )}
+        </div>
       )}
 
       {status === "done" && (

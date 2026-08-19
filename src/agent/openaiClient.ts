@@ -1,4 +1,5 @@
 import type OpenAI from "openai";
+import { redactSecrets } from "@/lib/redact";
 
 /**
  * The single seam where chat completions enter the app.
@@ -27,15 +28,23 @@ export async function createChatCompletion(params: ChatParams): Promise<ChatComp
 
   if (!response.ok) {
     const text = await response.text();
+    // The status prefix is always kept: lib/errors.ts classifies on it, and
+    // upstream wording is not something we control.
     let message = `OpenAI proxy request failed (${response.status}) at ${endpoint}.`;
     try {
-      const json = JSON.parse(text) as { error?: string };
-      if (typeof json.error === "string") message = json.error;
+      const json = JSON.parse(text) as { error?: string; details?: unknown };
+      const parts = [
+        typeof json.error === "string" ? json.error : null,
+        typeof json.details === "string" ? json.details : null,
+      ].filter(Boolean);
+      if (parts.length) message = `${message} ${parts.join(" ")}`;
     } catch {
       const snippet = text.trim().slice(0, 220);
       if (snippet) message = `${message} ${snippet}`;
     }
-    throw new Error(message);
+    // Redact here too, so a stale deployment of the API function or a non-JSON
+    // upstream body still cannot put a key into the thrown error.
+    throw new Error(redactSecrets(message));
   }
 
   return (await response.json()) as ChatCompletion;
