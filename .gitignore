@@ -66,3 +66,9 @@ pnpm-debug.log*
 JOURNAL.md
 .vercel
 vercel.json.backup
+.env*.local
+
+# Python bytecode cache
+api/__pycache__/
+__pycache__/
+.ruff_cache/

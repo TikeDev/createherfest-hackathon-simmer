@@ -225,3 +225,8 @@ Before completing any UI task, verify:
 If any item cannot be verified from the code alone, add a `<!-- a11y: needs
 manual verification — [reason] -->` comment so it is not silently dropped.
 <!-- a11y-agent-team: end -->
+
+## Session Phrase Mapping
+
+When the user says "see the running browser", interpret it as:
+"check the Chrome DevTools MCP server".

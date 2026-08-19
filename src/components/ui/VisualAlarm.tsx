@@ -33,10 +33,17 @@ export function VisualAlarm({ isActive, onDismiss }: VisualAlarmProps) {
             0%, 100% { opacity: 0.75; }
             50% { opacity: 0.95; }
           }
+          @media (prefers-reduced-motion: reduce) {
+            .visual-alarm-overlay {
+              animation: none !important;
+              opacity: 0.9 !important;
+            }
+          }
         `}
       </style>
 
       <div
+        className="visual-alarm-overlay"
         style={{
           position: "fixed",
           inset: 0,
@@ -50,7 +57,7 @@ export function VisualAlarm({ isActive, onDismiss }: VisualAlarmProps) {
         }}
         role="alert"
         aria-live="assertive"
-        aria-label="Timer alarm"
+        aria-label="Timer alarm - press Escape or click to dismiss"
         onClick={onDismiss}
       >
         <div

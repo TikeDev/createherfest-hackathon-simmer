@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { getAllRecipes } from "@/storage/recipes";
 import { useRecipeFilters } from "@/hooks/useRecipeFilters";
 import { useProfile } from "@/hooks/useProfile";
@@ -19,15 +20,23 @@ const ENERGY_CONFIG: Record<EnergyLevel, { icon: LucideIcon; label: string; colo
   high: { icon: Zap, label: "Feeling good", color: "text-orange-500" },
 };
 
-const READINESS_CONFIG: Record<Exclude<Readiness, "all">, { icon: LucideIcon; label: string; color: string }> = {
+const READINESS_CONFIG: Record<
+  Exclude<Readiness, "all">,
+  { icon: LucideIcon; label: string; color: string }
+> = {
   "eat-soon": { icon: Utensils, label: "Eat Soon", color: "text-orange-500" },
   "plan-ahead": { icon: Calendar, label: "Plan Ahead", color: "text-sage" },
 };
 
 export default function Home() {
+  useDocumentTitle("My Recipes");
   const location = useLocation();
   const navigate = useNavigate();
-  const session = location.state as { energy?: EnergyLevel; readiness?: Exclude<Readiness, "all">; note?: string } | null;
+  const session = location.state as {
+    energy?: EnergyLevel;
+    readiness?: Exclude<Readiness, "all">;
+    note?: string;
+  } | null;
   const hasSession = !!(session?.energy || session?.readiness || session?.note);
 
   const [recipes, setRecipes] = useState<RecipeJSON[]>([]);

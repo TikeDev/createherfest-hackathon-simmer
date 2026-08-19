@@ -9,6 +9,7 @@
 - [📄 Updating Documentation](#-updating-documentation)
 - [🎨 Claude Code Figma Plugin (MCP + Skills)](#-claude-code-figma-plugin-mcp--skills)
 - [🔍 Chrome DevTools MCP](#-chrome-devtools-mcp)
+  - [Plugin vs MCP-only installation](#plugin-vs-mcp-only-installation)
 - [Option A: Chrome Beta (Mac/Windows)](#option-a-chrome-beta-macwindows)
 - [Option B: Brave on Windows (untested)](#option-b-brave-on-windows-untested)
 
@@ -154,6 +155,42 @@ claude mcp add --transport http figma https://mcp.figma.com/mcp --scope project
 Gives Claude Code the ability to inspect and interact with a browser — useful for debugging the PWA, checking network requests, and testing accessibility.
 
 > **How this project works:** Instead of letting the MCP launch its own browser, we connect it to an existing instance running with remote debugging on port 9222. The `pnpm dev:browser` script handles this for Chrome Beta.
+
+### Plugin vs MCP-only installation
+
+There are two ways to get Chrome DevTools MCP. Choose whichever fits your workflow — both give you the same debugging tools.
+
+| | **Plugin (global)** | **MCP-only (project)** |
+|---|---|---|
+| **Install** | `claude plugin install ChromeDevTools/chrome-devtools-mcp` | Use the `.mcp.json` already in this repo |
+| **Scope** | Available in every project | Only this project |
+| **Updates** | Auto-managed by Claude Code | Uses `@latest` on each launch via npx |
+| **Extras** | Includes skills (enhanced prompts) | Tools only |
+| **Config needed** | Disable `.mcp.json` locally (see below) | Enable in `settings.local.json` |
+
+**Important: don't run both at once.** If you install the plugin globally AND have the project's `.mcp.json` server enabled, you'll get two instances of the same MCP server — causing duplicate tools or errors. The Chrome DevTools repo [explicitly warns about this](https://github.com/ChromeDevTools/chrome-devtools-mcp).
+
+#### If you use the plugin (global install)
+
+After installing the plugin, disable the project-level `.mcp.json` server so it doesn't double-register. Edit `.claude/settings.local.json` (gitignored — won't affect teammates):
+
+```json
+{
+  "enabledMcpjsonServers": []
+}
+```
+
+#### If you don't use the plugin (MCP-only)
+
+The `.mcp.json` in the repo root defines the server. Enable it in `.claude/settings.local.json`:
+
+```json
+{
+  "enabledMcpjsonServers": ["chrome-devtools"]
+}
+```
+
+Then continue with the browser-specific setup below.
 
 Choose the option that matches your browser.
 

@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { RecipeInput } from "@/components/extraction/RecipeInput";
 import { ExtractionProgressDisplay } from "@/components/extraction/ExtractionProgress";
 import { useRecipeExtraction } from "@/hooks/useRecipeExtraction";
@@ -6,6 +7,7 @@ import { Icon } from "@/components/ui/icon";
 import { CircleCheck } from "lucide-react";
 
 export default function Extract() {
+  useDocumentTitle("Add a Recipe");
   const navigate = useNavigate();
   const { status, progress, result, error, run, reset } = useRecipeExtraction();
 
@@ -44,9 +46,7 @@ export default function Extract() {
   return (
     <div className="max-w-xl mx-auto px-4 pt-4 pb-8 space-y-6 md:py-8">
       <div>
-        <h1 className="pl-14 text-left text-2xl font-headline text-forest md:pl-0">
-          Add a Recipe
-        </h1>
+        <h1 className="pl-14 text-left text-2xl font-headline text-forest md:pl-0">Add a Recipe</h1>
         <p className="mt-1 pl-14 text-left text-sm text-forest/60 md:pl-0">
           Import from a URL or paste recipe text. The AI will extract and structure it for you.
         </p>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { Icon } from "@/components/ui/icon";
 import { Leaf, Sun, Zap, Utensils, Calendar } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -20,12 +21,18 @@ const ENERGY_OPTIONS: { value: EnergyLevel; icon: LucideIcon; label: string; col
   { value: "high", icon: Zap, label: "Feeling good", color: "text-orange-500" },
 ];
 
-const READINESS_OPTIONS: { value: Exclude<Readiness, "all">; icon: LucideIcon; label: string; color: string }[] = [
+const READINESS_OPTIONS: {
+  value: Exclude<Readiness, "all">;
+  icon: LucideIcon;
+  label: string;
+  color: string;
+}[] = [
   { value: "eat-soon", icon: Utensils, label: "Eat Soon", color: "text-orange-500" },
   { value: "plan-ahead", icon: Calendar, label: "Plan Ahead", color: "text-sage" },
 ];
 
 export default function Landing() {
+  useDocumentTitle("Simmer");
   const navigate = useNavigate();
   const [energy, setEnergy] = useState<EnergyLevel | null>(null);
   const [readiness, setReadiness] = useState<Exclude<Readiness, "all"> | null>(null);

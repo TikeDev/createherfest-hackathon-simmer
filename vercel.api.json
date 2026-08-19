@@ -1,0 +1,6 @@
+{
+  "framework": null,
+  "devCommand": "",
+  "builds": [{ "src": "api/scrape-recipe.py", "use": "@vercel/python" }],
+  "routes": [{ "src": "/api/scrape-recipe", "dest": "/api/scrape-recipe.py" }]
+}

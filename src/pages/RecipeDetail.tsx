@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { getRecipe } from "@/storage/recipes";
 import { IngredientList } from "@/components/recipe/IngredientList";
 import { StepList } from "@/components/recipe/StepList";
@@ -10,6 +11,7 @@ export default function RecipeDetail() {
   const navigate = useNavigate();
   const [recipe, setRecipe] = useState<RecipeJSON | null>(null);
   const [loading, setLoading] = useState(true);
+  useDocumentTitle(recipe?.title ?? "Recipe");
 
   useEffect(() => {
     if (!id) return;
@@ -114,6 +116,7 @@ export default function RecipeDetail() {
             className="underline hover:text-forest"
           >
             {recipe.sourceDomain}
+            <span className="sr-only"> (opens in new tab)</span>
           </a>
         </p>
       )}

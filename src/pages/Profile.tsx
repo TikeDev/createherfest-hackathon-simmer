@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { useProfile } from "@/hooks/useProfile";
 import { handleRadioKeyDown } from "@/utils/a11y";
 import { Slider } from "@/components/ui/slider";
@@ -239,6 +240,7 @@ function Section({
 // --- Main page ---
 
 export default function Profile() {
+  useDocumentTitle("My Profile");
   const { profile, loading, saveStatus, isDirty, update, save, discard } = useProfile();
   const [uploadError, setUploadError] = useState<string>("");
 
@@ -312,8 +314,6 @@ export default function Profile() {
           </button>
           <button
             type="button"
-            role="status"
-            aria-live="polite"
             onClick={() => void save()}
             disabled={!isDirty || saveStatus === "saving"}
             className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold bg-sage text-white transition-opacity duration-200 focus:outline-none focus:ring-2 focus:ring-sage focus:ring-offset-2 ${
@@ -331,6 +331,13 @@ export default function Profile() {
             )}
             {saveStatus === "idle" && "Save"}
           </button>
+          <span role="status" aria-live="polite" className="sr-only">
+            {saveStatus === "saving"
+              ? "Saving profile..."
+              : saveStatus === "saved"
+                ? "Profile saved"
+                : ""}
+          </span>
           <Link
             to="/recipes"
             className="inline-flex items-center gap-1 rounded-lg bg-surface border border-mist-pale px-3 py-1.5 text-xs font-medium text-forest/70 hover:border-mist hover:text-forest transition-colors focus:outline-none focus:ring-2 focus:ring-sage focus:ring-offset-2 dark:text-cream-text/70 dark:border-forest dark:hover:text-cream-text"
@@ -479,7 +486,7 @@ export default function Profile() {
                 <SelectGroup>
                   {Object.entries(ALARM_SOUNDS).map(([id, sound]) => (
                     <SelectItem key={id} value={id}>
-                      {sound.label} — {sound.description}
+                      {sound.label}: {sound.description}
                     </SelectItem>
                   ))}
                   {profile.customAlarmUploaded && (
@@ -547,6 +554,7 @@ export default function Profile() {
                 <input
                   type="file"
                   accept="audio/mp3,audio/mpeg,audio/wav,audio/ogg,audio/m4a,audio/x-m4a"
+                  aria-label="Upload custom alarm sound (MP3, WAV, OGG, or M4A, max 2MB)"
                   disabled={profile.alarmEnabled === false}
                   onChange={(e) => {
                     const file = e.target.files?.[0];

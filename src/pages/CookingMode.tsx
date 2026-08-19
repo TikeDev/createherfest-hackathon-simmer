@@ -8,6 +8,8 @@ import ThemeToggle from "../components/ui/ThemeToggle";
 import { Icon } from "@/components/ui/icon";
 import { useViewPreferences } from "@/contexts/ViewPreferencesContext";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { handleRadioKeyDown } from "@/utils/a11y";
 import { useProfile } from "@/hooks/useProfile";
 import { playAlarm, stopAlarm } from "@/utils/alarm";
 import type { AlarmPlayback, AlarmSettings } from "@/utils/alarm";
@@ -69,7 +71,7 @@ const Btn = ({
   disabled?: boolean;
 }) => {
   const baseClasses =
-    "rounded-[10px] px-6 py-3 text-sm font-bold cursor-pointer font-nunito transition-all duration-150 w-full";
+    "rounded-[10px] px-6 py-3 text-sm font-bold cursor-pointer font-nunito transition-all duration-150 w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-2";
   const variantClasses = {
     primary: `bg-sage text-white border-none ${disabled ? "opacity-50 cursor-default" : "hover:bg-sage-dark"}`,
     secondary: "bg-transparent text-sage border-[1.5px] border-sage hover:bg-sage/10",
@@ -612,6 +614,11 @@ function GroceriesStage({
             items checked
           </div>
           <div
+            role="progressbar"
+            aria-valuenow={checkedCount}
+            aria-valuemin={0}
+            aria-valuemax={total}
+            aria-label={`${checkedCount} of ${total} items checked`}
             style={{
               height: 8,
               backgroundColor: "var(--color-mist-pale)",
@@ -737,6 +744,8 @@ function StepStage({
             <div>
               <button
                 onClick={() => setTipOpen(!tipOpen)}
+                aria-expanded={tipOpen}
+                className="focus:outline-none focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-2"
                 style={{
                   backgroundColor: "transparent",
                   border: "1.5px solid var(--color-mist)",
@@ -930,6 +939,7 @@ function CircularTimer({
           (paused ? (
             <button
               onClick={onUnpause}
+              className="focus:outline-none focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-2"
               style={{
                 ...timerBtnStyle("var(--color-sage)", "white"),
                 display: "flex",
@@ -942,6 +952,7 @@ function CircularTimer({
           ) : (
             <button
               onClick={onPause}
+              className="focus:outline-none focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-2"
               style={{
                 ...timerBtnStyle("transparent", "var(--color-sage)", "var(--color-sage)"),
                 display: "flex",
@@ -954,6 +965,7 @@ function CircularTimer({
           ))}
         <button
           onClick={onRestart}
+          className="focus:outline-none focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-2"
           style={{
             ...timerBtnStyle("transparent", "var(--muted-foreground)", "var(--border)"),
             display: "flex",
@@ -977,11 +989,12 @@ function CircularTimer({
               gap: 6,
             }}
           >
-            <Icon icon={CircleCheckBig} size="sm" decorative /> Timer done — ready for the next step
+            <Icon icon={CircleCheckBig} size="sm" decorative /> Timer done! Ready for the next step
           </div>
           {alarmPlaying && onDismissAlarm && (
             <button
               onClick={onDismissAlarm}
+              className="focus:outline-none focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-2"
               style={{
                 ...timerBtnStyle("var(--color-sage)", "white"),
                 display: "flex",
@@ -1178,6 +1191,7 @@ function CookStage({
             {timerSeconds && !timerStarted && (
               <button
                 onClick={() => startTimer(timerSeconds)}
+                className="focus:outline-none focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-2"
                 style={{
                   backgroundColor: "var(--accent)",
                   border: "1.5px solid var(--color-mist)",
@@ -1219,29 +1233,26 @@ function CookStage({
               style={{ display: "flex", gap: 8, marginTop: 20 }}
             >
               {steps.map((_, i) => (
-                <div
+                <button
                   key={i}
-                  aria-hidden="true"
+                  aria-label={`Go to step ${i + 1}`}
+                  aria-current={i === idx ? "step" : undefined}
+                  onClick={() => {
+                    resetTimerState();
+                    setIdx(i);
+                  }}
                   style={{
                     height: 4,
                     flex: 1,
                     borderRadius: 2,
+                    cursor: "pointer",
+                    transition: "background 0.2s",
                     backgroundColor: i <= idx ? "var(--color-sage)" : "var(--color-mist-pale)",
+                    border: "none",
+                    padding: 0,
                   }}
                 />
               ))}
-              <span
-                style={{
-                  position: "absolute",
-                  width: 1,
-                  height: 1,
-                  overflow: "hidden",
-                  clip: "rect(0,0,0,0)",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                Step {idx + 1} of {steps.length}
-              </span>
             </div>
           </div>
         }
@@ -1331,7 +1342,12 @@ function ServeStage({
       {!submitted ? (
         <Card style={{ marginBottom: 28 }}>
           <div
-            style={{ fontSize: isMobile ? 20 : 22, fontWeight: 700, color: "var(--foreground)", marginBottom: 4 }}
+            style={{
+              fontSize: isMobile ? 20 : 22,
+              fontWeight: 700,
+              color: "var(--foreground)",
+              marginBottom: 4,
+            }}
           >
             How complex did this feel?
           </div>
@@ -1355,7 +1371,12 @@ function ServeStage({
                 role="radio"
                 aria-checked={rating === n}
                 aria-label={`${n} out of 5 stars`}
+                tabIndex={rating === n || (rating === 0 && n === 1) ? 0 : -1}
                 onClick={() => setRating(n)}
+                onKeyDown={(e) =>
+                  handleRadioKeyDown(e, [1, 2, 3, 4, 5], rating || 1, (v) => setRating(v))
+                }
+                className="focus:outline-none focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-2"
                 style={{
                   width: isMobile ? 48 : 54,
                   height: isMobile ? 48 : 54,
@@ -1406,7 +1427,7 @@ function ServeStage({
         >
           <Icon icon={Leaf} size="lg" decorative className="text-sage mb-2" />
           <div style={{ fontSize: 18, fontWeight: 700, color: "var(--color-sage)" }}>
-            Thanks — rating saved
+            Thanks, rating saved
           </div>
         </Card>
       )}
@@ -1421,6 +1442,7 @@ function ServeStage({
       >
         <button
           onClick={onBack}
+          className="focus:outline-none focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-2"
           style={{
             padding: "13px 28px",
             borderRadius: 10,
@@ -1437,6 +1459,7 @@ function ServeStage({
         </button>
         <button
           onClick={onComplete}
+          className="focus:outline-none focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-2"
           style={{
             padding: "13px 28px",
             borderRadius: 10,
@@ -1468,6 +1491,7 @@ export function CookingMode({ recipe, onComplete, onBack }: Props) {
   const isMobile = useMediaQuery("(max-width: 900px)");
   // Access view preferences to ensure theme context is connected
   useViewPreferences();
+  useDocumentTitle(`Cooking: ${recipe.title}`);
 
   // Split flat steps array into stages using isCritical for preprep
   const prePrepSteps = recipe.steps.filter((s) => s.isCritical);
@@ -1568,7 +1592,15 @@ export function CookingMode({ recipe, onComplete, onBack }: Props) {
           boxShadow: "0 1px 8px rgba(45,59,53,0.06)",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0, justifySelf: "start" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            minWidth: 0,
+            justifySelf: "start",
+          }}
+        >
           <img
             src="/simmer-logo-192.png"
             alt="Simmer logo"
@@ -1606,6 +1638,8 @@ export function CookingMode({ recipe, onComplete, onBack }: Props) {
           <ThemeToggle compact />
           <button
             onClick={onBack}
+            aria-label="Exit cooking mode"
+            className="focus:outline-none focus-visible:ring-2 focus-visible:ring-sage focus-visible:ring-offset-2"
             style={{
               background: "none",
               border: "none",

@@ -27,6 +27,12 @@ export default defineConfig({
   server: {
     port: parseInt(process.env.PORT || "5173", 10),
     strictPort: true,
+    // The Python scraper (api/scrape-recipe.py) runs under a separate
+    // `vercel dev` on 5174. Proxying keeps it same-origin so fetcher.ts can
+    // keep calling the relative /api path and HMR still works here.
+    proxy: {
+      "/api": "http://localhost:5174",
+    },
   },
   resolve: {
     alias: {

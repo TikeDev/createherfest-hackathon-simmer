@@ -34,13 +34,30 @@ export function RecipeInput({ status, onSubmit }: RecipeInputProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Tab toggle */}
-      <div role="tablist" className="flex rounded-lg border border-mist-pale p-1 gap-1">
+      <div
+        role="tablist"
+        aria-label="Recipe input method"
+        className="flex rounded-lg border border-mist-pale p-1 gap-1"
+      >
         <button
           type="button"
           role="tab"
+          id="tab-url"
           aria-selected={tab === "url"}
+          aria-controls="tabpanel-url"
+          tabIndex={tab === "url" ? 0 : -1}
           onClick={() => setTab("url")}
-          className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors ${
+          onKeyDown={(e) => {
+            if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+              e.preventDefault();
+              setTab(tab === "url" ? "text" : "url");
+              const next = (e.target as HTMLElement)
+                .closest('[role="tablist"]')
+                ?.querySelector<HTMLElement>(`[role="tab"]:not([aria-selected="true"])`);
+              next?.focus();
+            }
+          }}
+          className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sage ${
             tab === "url" ? "bg-sage text-white" : "text-forest/70 hover:text-forest"
           }`}
         >
@@ -49,9 +66,22 @@ export function RecipeInput({ status, onSubmit }: RecipeInputProps) {
         <button
           type="button"
           role="tab"
+          id="tab-text"
           aria-selected={tab === "text"}
+          aria-controls="tabpanel-text"
+          tabIndex={tab === "text" ? 0 : -1}
           onClick={() => setTab("text")}
-          className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors ${
+          onKeyDown={(e) => {
+            if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+              e.preventDefault();
+              setTab(tab === "url" ? "text" : "url");
+              const next = (e.target as HTMLElement)
+                .closest('[role="tablist"]')
+                ?.querySelector<HTMLElement>(`[role="tab"]:not([aria-selected="true"])`);
+              next?.focus();
+            }
+          }}
+          className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sage ${
             tab === "text" ? "bg-sage text-white" : "text-forest/70 hover:text-forest"
           }`}
         >
@@ -60,7 +90,7 @@ export function RecipeInput({ status, onSubmit }: RecipeInputProps) {
       </div>
 
       {tab === "url" ? (
-        <div>
+        <div id="tabpanel-url" role="tabpanel" aria-labelledby="tab-url">
           <label htmlFor="recipe-url" className="block text-sm font-medium text-forest mb-1">
             Recipe URL
           </label>
@@ -75,7 +105,7 @@ export function RecipeInput({ status, onSubmit }: RecipeInputProps) {
           />
         </div>
       ) : (
-        <div>
+        <div id="tabpanel-text" role="tabpanel" aria-labelledby="tab-text">
           <label htmlFor="recipe-text" className="block text-sm font-medium text-forest mb-1">
             Recipe Text
           </label>
@@ -83,7 +113,7 @@ export function RecipeInput({ status, onSubmit }: RecipeInputProps) {
             id="recipe-text"
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Paste the full recipe here — ingredients, steps, and any intro notes."
+            placeholder="Paste the full recipe here: ingredients, steps, and any intro notes."
             rows={10}
             disabled={isLoading}
             className="w-full rounded-lg border border-mist-pale bg-cream text-forest px-4 py-3 text-sm placeholder:text-forest/40 focus:border-sage focus:outline-none focus:ring-2 focus:ring-sage/20 disabled:opacity-50 resize-y"
