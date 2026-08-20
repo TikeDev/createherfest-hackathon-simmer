@@ -8,26 +8,18 @@
 
 ## Table of Contents
 
-- [Try It](#try-it)
+- [Try It!](#try-it)
   - [Problem Frame](#problem-frame)
   - [Key Features](#key-features)
   - [What to Try](#what-to-try)
 - [For Developers](#for-developers)
-  - [Requirements](#requirements)
-  - [Installation](#installation)
-  - [Environment variables](#environment-variables)
-  - [Dev server commands](#dev-server-commands)
-  - [Other commands](#other-commands)
-  - [Troubleshooting](#troubleshooting)
-  - [Technical Architecture](#technical-architecture)
-  - [Testing & Known Issues](#testing-known-issues)
 - [Project Logs & Documentation](#project-logs-documentation)
 - [Team & Acknowledgments](#team-acknowledgments)
 - [License & Attributions](#license-attributions)
 
 ---
 
-## 🍽️ Try It
+## 🍽️ Try It!
 
 **[Try the Live Demo](https://simmer-recipes.vercel.app/)** (mobile friendly, no install needed)
 
@@ -52,8 +44,8 @@
 
 1. **Set up your profile.** Select allergens, mobility limits, and preferred appliances. Your profile is saved locally.
 2. **Describe today's state.** Pick chips ("low energy", "one hand") and/or type a note. The app filters and scores recipes in real time.
-3. **Open a recipe in Playbook View.** Tap a recommendation, then step through the recipe with checkboxes, large text, and "Why this fits you" context.
-4. **Import a recipe.** Paste a URL or recipe text. The extraction agent parses it into structured format, available offline.
+3. **Import a recipe.** Paste a URL or recipe text. The extraction agent parses it into structured format, available offline.
+4. **Open a recipe in Playbook View.** Tap a recommendation, then step through the recipe with checkboxes, large text, and "Why this fits you" context.
 
 **📹 Demo Video:** [https://www.youtube.com/watch?v=5SIi_76ZiN8](https://www.youtube.com/watch?v=5SIi_76ZiN8)
 
@@ -130,6 +122,13 @@ pnpm lint       # ESLint + stylelint
 pnpm lint:py    # ruff, for the Python scraper
 ```
 
+### Technical Architecture
+
+- **Frontend:** React 19 + TypeScript, PWA (via `vite-plugin-pwa`), Vite 6, Tailwind CSS 3. Handles profile setup, session input, recommendations, recipe detail, and Playbook View.
+- **Backend:** Vercel serverless function (`api/scrape-recipe.py`), fetches recipe pages through a rotating residential proxy and parses them with `recipe-scrapers`. No persistent server.
+- **Database:** IndexedDB via `idb`, fully local storage for recipes, user profile, and offline extraction queue.
+- **AI Integration:** OpenAI `gpt-5-nano` with function calling, powers the recipe extraction agent (parse ingredients, extract steps, convert units, validate output).
+
 ### Troubleshooting
 
 | Symptom                                              | Cause and fix                                                                                                   |
@@ -139,13 +138,6 @@ pnpm lint:py    # ruff, for the Python scraper
 | `Server is missing PROXY_HTTP_URL / PROXY_HTTPS_URL` | URL import needs proxy credentials. Paste recipe text instead, or add them.                                     |
 | Port 5173 or 5174 already in use                     | A previous dev server is still running: `lsof -ti:5173,5174 \| xargs kill`                                      |
 | Scraper fails to import                              | Some sites bot-block aggressively. `bbcgoodfood.com` is reliable for testing.                                   |
-
-### Technical Architecture
-
-- **Frontend:** React 19 + TypeScript, PWA (via `vite-plugin-pwa`), Vite 6, Tailwind CSS 3. Handles profile setup, session input, recommendations, recipe detail, and Playbook View.
-- **Backend:** Vercel serverless function (`api/scrape-recipe.py`), fetches recipe pages through a rotating residential proxy and parses them with `recipe-scrapers`. No persistent server.
-- **Database:** IndexedDB via `idb`, fully local storage for recipes, user profile, and offline extraction queue.
-- **AI Integration:** OpenAI `gpt-5-nano` with function calling, powers the recipe extraction agent (parse ingredients, extract steps, convert units, validate output).
 
 ### Testing & Known Issues
 
@@ -158,10 +150,10 @@ pnpm lint:py    # ruff, for the Python scraper
 
 ## 📋 Project Logs & Documentation
 
-| Log Type                  | Link                                                                                      |
-| :------------------------ | :------------------------------------------------------------------------------------------ |
-| **MVP Spec**               | [docs/plans/Initial_MVP_Plan.md](docs/plans/Initial_MVP_Plan.md)                         |
-| **Extraction Agent Plan**  | [docs/plans/PLAN-RECIPE_EXTRACTION_AGENT.md](docs/plans/PLAN-RECIPE_EXTRACTION_AGENT.md) |
+| Log Type                  | Link                                                                                     |
+| :------------------------ | :--------------------------------------------------------------------------------------- |
+| **MVP Spec**              | [docs/plans/Initial_MVP_Plan.md](docs/plans/Initial_MVP_Plan.md)                         |
+| **Extraction Agent Plan** | [docs/plans/PLAN-RECIPE_EXTRACTION_AGENT.md](docs/plans/PLAN-RECIPE_EXTRACTION_AGENT.md) |
 
 ---
 
