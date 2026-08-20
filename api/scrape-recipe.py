@@ -71,18 +71,106 @@ def _fetch_via_firecrawl(url: str, api_key: str) -> str | None:
             timeout=60,  # stealth rendering is slow
         )
         if r.status_code != 200:
+            _log(f"Firecrawl HTTP {r.status_code}: {r.text[:300]!r}")
             return None
         payload = r.json()
         data = payload.get("data", payload)
-        return data.get("rawHtml") or None
-    except (requests.exceptions.RequestException, ValueError):
+        html = data.get("rawHtml") or None
+        if html is None:
+            _log(f"Firecrawl 200 but no rawHtml in payload: {str(payload)[:300]!r}")
+        return html
+    except (requests.exceptions.RequestException, ValueError) as e:
+        _log(f"Firecrawl request error: {e!r}")
         return None
+
+
+def _scrape(
+    html: str,
+    url: str,
+    scrape_html,
+    website_not_implemented_error,
+    no_schema_found_in_wild_mode,
+):
+    """Parse HTML into a recipe dict. Returns (result, error_response) - exactly
+    one is None. error_response is a (status, body) tuple ready for _json_response.
+    """
+    try:
+        scraper = scrape_html(html, org_url=url, wild_mode=True)
+    except (website_not_implemented_error, no_schema_found_in_wild_mode):
+        return None, (
+            422,
+            {
+                "error": (
+                    "Could not extract a recipe from this page. "
+                    "Try pasting the recipe text directly."
+                )
+            },
+        )
+    except Exception as e:
+        return None, (500, {"error": f"Recipe parsing failed: {e}"})
+
+    result = {
+        "title": _safe_call(scraper.title, ""),
+        "ingredients": _safe_call(scraper.ingredients, []),
+        "instructions_list": _safe_call(scraper.instructions_list, []),
+        "yields": _safe_call(scraper.yields, ""),
+        "total_time": _safe_call(scraper.total_time, None),
+        "prep_time": _safe_call(scraper.prep_time, None),
+        "cook_time": _safe_call(scraper.cook_time, None),
+        "image": _safe_call(scraper.image, ""),
+        "host": _safe_call(scraper.host, ""),
+        "language": _safe_call(scraper.language, ""),
+        "description": _safe_call(scraper.description, ""),
+    }
+
+    # Site-specific scrapers (e.g. TheSpruceEats) hardcode CSS selectors that
+    # go stale when a site redesigns its markup, even though the JSON-LD
+    # schema.org data on the page is still correct. Fall back to it before
+    # giving up.
+    if not result["ingredients"]:
+        raw = _safe_call(lambda: scraper.schema.data.get("recipeIngredient"), None)
+        if isinstance(raw, list) and raw:
+            result["ingredients"] = [str(i).strip() for i in raw if str(i).strip()]
+            _log(
+                f"ingredients recovered from schema.org data: {len(result['ingredients'])}"
+            )
+
+    _log(
+        f"scraped title={result['title']!r} "
+        f"ingredients={len(result['ingredients'])} "
+        f"steps={len(result['instructions_list'])}"
+    )
+
+    # Two ways a fetch can look successful but yield nothing usable:
+    # an anti-bot interstitial served as HTTP 200, or a site-specific
+    # scraper that breaks upstream (simplyrecipes raises AttributeError
+    # on instructions, which _safe_call turns into an empty list).
+    # A recipe missing either half is not usable, so require both.
+    if not result["ingredients"] or not result["instructions_list"]:
+        return None, (
+            422,
+            {
+                "error": (
+                    "Could not extract a recipe from this page. "
+                    "Try pasting the recipe text directly."
+                )
+            },
+        )
+
+    return result, None
 
 
 def _safe_call(fn, default=None):
     try:
         return fn()
-    except Exception:
+    except Exception as e:
+        owner = getattr(fn, "__self__", None)
+        name = (
+            f"{owner.__class__.__name__}.{fn.__name__}"
+            if owner is not None
+            else fn.__name__
+        )
+        _log(f"{name} failed: {e!r}")
         return default
 
 
@@ -205,15 +293,14 @@ class handler(BaseHTTPRequestHandler):  # noqa: N801
             _log(f"attempt {_attempt + 1}/{FETCH_ATTEMPTS}: {last_error}")
 
         html = resp.text if resp is not None else None
+        firecrawl_key = os.environ.get("FIRECRAWL_API_KEY")
 
         # Firecrawl renders in a real browser and can reach a few sites that
         # block us outright. Optional: without a key we simply skip the tier.
-        if html is None:
-            firecrawl_key = os.environ.get("FIRECRAWL_API_KEY")
-            if firecrawl_key:
-                _log("curl_cffi exhausted, trying Firecrawl")
-                html = _fetch_via_firecrawl(url, firecrawl_key)
-                _log(f"Firecrawl {'returned HTML' if html else 'failed'}")
+        if html is None and firecrawl_key:
+            _log("curl_cffi exhausted, trying Firecrawl")
+            html = _fetch_via_firecrawl(url, firecrawl_key)
+            _log(f"Firecrawl {'returned HTML' if html else 'failed'}")
 
         if not html:
             _log(f"fetch failed: {last_error}")
@@ -233,61 +320,35 @@ class handler(BaseHTTPRequestHandler):  # noqa: N801
             )
             return
 
-        # Parse with recipe-scrapers
-        try:
-            scraper = scrape_html(html, org_url=url, wild_mode=True)
-        except (WebsiteNotImplementedError, NoSchemaFoundInWildMode):
-            _json_response(
-                self,
-                422,
-                {
-                    "error": (
-                        "Could not extract a recipe from this page. "
-                        "Try pasting the recipe text directly."
-                    )
-                },
-            )
-            return
-        except Exception as e:
-            _json_response(self, 500, {"error": f"Recipe parsing failed: {e}"})
-            return
-
-        result = {
-            "title": _safe_call(scraper.title, ""),
-            "ingredients": _safe_call(scraper.ingredients, []),
-            "instructions_list": _safe_call(scraper.instructions_list, []),
-            "yields": _safe_call(scraper.yields, ""),
-            "total_time": _safe_call(scraper.total_time, None),
-            "prep_time": _safe_call(scraper.prep_time, None),
-            "cook_time": _safe_call(scraper.cook_time, None),
-            "image": _safe_call(scraper.image, ""),
-            "host": _safe_call(scraper.host, ""),
-            "language": _safe_call(scraper.language, ""),
-            "description": _safe_call(scraper.description, ""),
-        }
-
-        # Two ways a fetch can look successful but yield nothing usable:
-        # an anti-bot interstitial served as HTTP 200, or a site-specific
-        # scraper that breaks upstream (simplyrecipes raises AttributeError
-        # on instructions, which _safe_call turns into an empty list).
-        # A recipe missing either half is not usable, so require both.
-        _log(
-            f"scraped title={result['title']!r} "
-            f"ingredients={len(result['ingredients'])} "
-            f"steps={len(result['instructions_list'])}"
+        result, error = _scrape(
+            html, url, scrape_html, WebsiteNotImplementedError, NoSchemaFoundInWildMode
         )
 
-        if not result["ingredients"] or not result["instructions_list"]:
-            _json_response(
-                self,
-                422,
-                {
-                    "error": (
-                        "Could not extract a recipe from this page. "
-                        "Try pasting the recipe text directly."
-                    )
-                },
-            )
+        # curl_cffi's HTML fetched fine but didn't parse into a usable recipe
+        # (anti-bot interstitial served as 200, JS-rendered ingredients, etc).
+        # Firecrawl renders in a real browser, so retry the whole scrape on
+        # its HTML before giving up.
+        if result is None and firecrawl_key:
+            _log("parse yielded no usable recipe, trying Firecrawl")
+            fc_html = _fetch_via_firecrawl(url, firecrawl_key)
+            if fc_html:
+                fc_result, fc_error = _scrape(
+                    fc_html,
+                    url,
+                    scrape_html,
+                    WebsiteNotImplementedError,
+                    NoSchemaFoundInWildMode,
+                )
+                if fc_result is not None:
+                    result, error = fc_result, None
+                else:
+                    _log(f"Firecrawl HTML also failed to parse: {fc_error}")
+            else:
+                _log("Firecrawl failed")
+
+        if error is not None:
+            status, body = error
+            _json_response(self, status, body)
             return
 
         _log("200 OK")
